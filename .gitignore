@@ -1,0 +1,6 @@
+.DS_Store
+/results/
+/MANIFEST.txt
+/dist/
+*.jl.cov
+__pycache__/

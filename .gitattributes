@@ -1,0 +1,2 @@
+# Keep instructor material out of the student source archives.
+instructor/ export-ignore

@@ -1,0 +1,115 @@
+
+PS2 Standard checks
+===================
+[FAIL] Estimate the average up factor
+       LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+[FAIL] Estimate the average down factor
+       LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+[FAIL] Count unchanged prices when estimating p
+       LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+[FAIL] Use the supplied time between prices
+       LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+[FAIL] Keep the supplied lattice parameters
+       LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+[FAIL] Include day 0 through the sale day
+       LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+[FAIL] Store the four sale prices after three days
+       LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+[FAIL] Include all paths in each node probability
+       LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+[FAIL] Each day's probabilities sum to one
+       LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+[FAIL] Add all sale-day outcomes with positive scaled NPV
+       LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+[FAIL] Exclude outcomes exactly equal to the benchmark
+       LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+[FAIL] Return zero when no outcome beats the benchmark
+       LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+[FAIL] Return one when every outcome beats the benchmark
+       LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+[FAIL] Convert trading days to years when discounting
+       LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+[FAIL] Run all three tasks on the supplied AAPL history
+       LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+
+passed 0 of 15 public tests
+Setup or source error: LoadError: ParseError:
+# Error @ /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1:17
+function broken(
+#               └ ── Expected `)` or `,`
+in expression starting at /var/folders/82/m7j29m517p9c2201mdkk3m580000gp/T/PS2 release checks jxiay301/PS2-CHEME-5660-Fall-2026/src/Standard.jl:1
+
+Submission check
+Track: standard
+Public tests: 0/15 passed
+Docstrings were not checked. Fix the setup or source error above, then run the checker again.
+Answers: responses/Standard.md
+  Question 1 still contains TODO. Replace the placeholder with your response.
+Save your answers and run the checker again.
+Local rubric feedback: 0
+Wrote MANIFEST.txt. This script has not uploaded your work.
+
+Save your files, ZIP the whole PS2 folder, and upload it to the PS2 assignment on Canvas.
+Name the ZIP CHEME-5660-PS2-<your netid>.zip, using your own NetID.
+Submit attempted work by the initial deadline even if checks fail or cannot run.
+For eligible revisions, use New Attempt on the same Canvas assignment.

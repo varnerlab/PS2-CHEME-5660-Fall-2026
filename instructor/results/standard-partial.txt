@@ -1,0 +1,68 @@
+
+PS2 Standard checks
+===================
+[FAIL] Estimate the average up factor
+       unfinished estimation task
+[FAIL] Estimate the average down factor
+       unfinished estimation task
+[FAIL] Count unchanged prices when estimating p
+       unfinished estimation task
+[FAIL] Use the supplied time between prices
+       unfinished estimation task
+[PASS] Keep the supplied lattice parameters
+[PASS] Include day 0 through the sale day
+[PASS] Store the four sale prices after three days
+[PASS] Include all paths in each node probability
+[PASS] Each day's probabilities sum to one
+[PASS] Add all sale-day outcomes with positive scaled NPV
+[PASS] Exclude outcomes exactly equal to the benchmark
+[PASS] Return zero when no outcome beats the benchmark
+[PASS] Return one when every outcome beats the benchmark
+[PASS] Convert trading days to years when discounting
+[FAIL] Run all three tasks on the supplied AAPL history
+       unfinished estimation task
+
+passed 10 of 15 public tests
+
+PS2 financial results
+Price history: AAPL, 2025-01-02 to 2025-12-31
+Price observations: 250; price changes: 249
+Use this history to estimate the models. The 2026 prices are used only to check the trade outcomes.
+Day 0: 2025-12-31; first trading day after purchase: 2026-01-02
+Purchase price: 272.2992 USD/share
+Benchmark: 5.00% per year, continuously compounded
+Each probability is the chance of selling above the benchmark price on the scheduled sale day.
+Lattice estimates: UNAVAILABLE — unfinished estimation task
+
+21 trading days: sale price to match benchmark = 273.4361 USD/share
+  Observed sale on 2026-02-02: 266.5831 USD/share
+  Observed scaled NPV = -2.5063%; beat benchmark: no
+
+63 trading days: sale price to match benchmark = 275.7243 USD/share
+  Observed sale on 2026-04-02: 254.6924 USD/share
+  Observed scaled NPV = -7.6279%; beat benchmark: no
+
+126 trading days: sale price to match benchmark = 279.1925 USD/share
+  Observed sale on 2026-07-06: 312.0838 USD/share
+  Observed scaled NPV = 11.7809%; beat benchmark: yes
+
+The three sale dates share one purchase and one price history.
+They show what happened to this trade. More forecasts are needed to judge probability accuracy.
+
+Saved results/standard-results.csv.
+In the CSV files, probabilities and scaled NPVs use decimal fractions; 0.05 means 5%.
+
+Submission check
+Track: standard
+Public tests: 10/15 passed
+Docstrings: All required functions have docstrings.
+Answers: responses/Standard.md
+  Question 1 still contains TODO. Replace the placeholder with your response.
+Save your answers and run the checker again.
+Local rubric feedback: 2
+Wrote MANIFEST.txt. This script has not uploaded your work.
+
+Save your files, ZIP the whole PS2 folder, and upload it to the PS2 assignment on Canvas.
+Name the ZIP CHEME-5660-PS2-<your netid>.zip, using your own NetID.
+Submit attempted work by the initial deadline even if checks fail or cannot run.
+For eligible revisions, use New Attempt on the same Canvas assignment.

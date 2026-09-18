@@ -1,0 +1,90 @@
+
+PS2 Advanced checks
+===================
+[PASS] Estimate the average up factor
+[PASS] Estimate the average down factor
+[PASS] Count unchanged prices when estimating p
+[PASS] Use the supplied time between prices
+[PASS] Keep the supplied lattice parameters
+[PASS] Include day 0 through the sale day
+[PASS] Store the four sale prices after three days
+[PASS] Include all paths in each node probability
+[PASS] Each day's probabilities sum to one
+[PASS] Add all sale-day outcomes with positive scaled NPV
+[PASS] Exclude outcomes exactly equal to the benchmark
+[PASS] Return zero when no outcome beats the benchmark
+[PASS] Return one when every outcome beats the benchmark
+[PASS] Convert trading days to years when discounting
+[PASS] Run all three tasks on the supplied AAPL history
+[PASS] Estimate mean growth from price changes
+[PASS] Scale the sample standard deviation to GBM volatility
+[PASS] Add half the variance to obtain price drift
+[PASS] Use mean growth and years in the GBM probability
+[PASS] Return one half when mean growth equals the benchmark
+[PASS] Handle zero volatility, including equality
+[PASS] Use the same AAPL history for the GBM comparison
+
+passed 22 of 22 public tests
+
+PS2 financial results
+Price history: AAPL, 2025-01-02 to 2025-12-31
+Price observations: 250; price changes: 249
+Use this history to estimate the models. The 2026 prices are used only to check the trade outcomes.
+Day 0: 2025-12-31; first trading day after purchase: 2026-01-02
+Purchase price: 272.2992 USD/share
+Benchmark: 5.00% per year, continuously compounded
+Each probability is the chance of selling above the benchmark price on the scheduled sale day.
+Lattice: u = 1.01041898, d = 0.98852853, p = 55.0201%
+GBM: mean growth = 10.9686%/year, volatility = 26.4020%/sqrt(year), drift = 14.4540%/year
+
+21 trading days: sale price to match benchmark = 273.4361 USD/share
+  Lattice probability of beating benchmark = 51.2433%
+  GBM probability of beating benchmark = 52.6016%
+  GBM expected scaled NPV = 0.7909%
+  Observed sale on 2026-02-02: 266.5831 USD/share
+  Observed scaled NPV = -2.5063%; beat benchmark: no
+  Check: sale-day probabilities sum to 1.0000000001 (should be 1, within rounding).
+
+63 trading days: sale price to match benchmark = 275.7243 USD/share
+  Lattice probability of beating benchmark = 61.7141%
+  GBM probability of beating benchmark = 54.4998%
+  GBM expected scaled NPV = 2.3916%
+  Observed sale on 2026-04-02: 254.6924 USD/share
+  Observed scaled NPV = -7.6279%; beat benchmark: no
+  Check: sale-day probabilities sum to 1.0000000000 (should be 1, within rounding).
+
+126 trading days: sale price to match benchmark = 279.1925 USD/share
+  Lattice probability of beating benchmark = 62.9059%
+  GBM probability of beating benchmark = 56.3502%
+  GBM expected scaled NPV = 4.8405%
+  Observed sale on 2026-07-06: 312.0838 USD/share
+  Observed scaled NPV = 11.7809%; beat benchmark: yes
+  Check: sale-day probabilities sum to 1.0000000000 (should be 1, within rounding).
+
+The three sale dates share one purchase and one price history.
+They show what happened to this trade. More forecasts are needed to judge probability accuracy.
+
+Advanced Question 3: separate example with assumed parameters
+Holding period: 63 trading days; benchmark: 5.00% per year
+Mean growth = 3.50%/year; volatility = 30.00%/sqrt(year); drift = 8.00%/year
+Probability of beating benchmark = 49.0027%
+Expected scaled NPV = 0.7528%
+
+Saved results/advanced-results.csv.
+Saved results/terminal-nodes.csv with the 63-day sale prices and probabilities.
+In the CSV files, probabilities and scaled NPVs use decimal fractions; 0.05 means 5%.
+
+Submission check
+Track: advanced
+Public tests: 22/22 passed
+Docstrings: All required functions have docstrings.
+Answers: responses/Advanced.md
+All three answer blocks contain text without TODO. The teaching team will review the answers.
+Local rubric feedback: pending completion review
+The teaching team must still review your code, documentation, and answers.
+Wrote MANIFEST.txt. This script has not uploaded your work.
+
+Save your files, ZIP the whole PS2 folder, and upload it to the PS2 assignment on Canvas.
+Name the ZIP CHEME-5660-PS2-<your netid>.zip, using your own NetID.
+Submit attempted work by the initial deadline even if checks fail or cannot run.
+For eligible revisions, use New Attempt on the same Canvas assignment.

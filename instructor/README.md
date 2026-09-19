@@ -30,6 +30,30 @@ folder out of Git. These links resolve only when the local files are present.
 A fresh clone needs local copies of both Julia solutions under
 [solution/src](../solution/src) before the reference checks can run.
 
+## Run a local solution
+
+Set [TRACK.txt](../TRACK.txt) to `standard` or `advanced`, then run this
+command from the PS2 folder:
+
+```text
+julia --project=. --startup-file=no check_submission.jl --solution
+```
+
+The checker loads [Include.jl](../Include.jl), which owns all assignment
+include calls. Its `_PATH_TO_SRC` selects `src` for the normal student
+command and `solution/src` when `--solution` is present. The selected track
+then determines whether it loads `Standard.jl` or `Advanced.jl`. No path
+editing or copying over student code is needed.
+
+The first output line identifies the actual source file. The local solution
+run prints the public checks and financial report, saves CSV files under
+[solution/results](../solution/results), and writes `solution/MANIFEST.txt`.
+That record includes the actual solution file checked. It does not present
+this run as a student submission or change the student source or responses.
+
+Omit `--solution` to return to the student version. Keeping the local
+solution folder present does not change the default student run.
+
 ## Rebuild and check
 
 From the PS2 folder, run:
@@ -49,6 +73,11 @@ fields empty, that this function can earn credit independently of the forecasts,
 and that the report uses student-returned values. The real student source and
 response files stay unchanged. Logs are saved under
 [solution/results](../solution/results).
+
+The checks also exercise both local solutions through `--solution`, helper
+loading before the selected source, and a missing local solution. They
+confirm that the default command still uses the starter when local solutions
+are present and that solution runs preserve student outputs.
 
 To check answer detection, docstring detection, and every grading threshold,
 run:

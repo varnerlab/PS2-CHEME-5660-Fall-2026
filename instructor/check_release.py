@@ -14,16 +14,18 @@ from zipfile import ZipFile
 from build_release import ROOT, build_release
 
 
-def run_case(folder: Path, label: str, expected: str) -> str:
+def run_case(folder: Path, label: str, expected: str, *, solution: bool = False) -> str:
     """Run the checker in folder and save its output under solution/results.
 
     label names the saved report. Require a normal exit, the expected pass-count
     text, and a submission record. Return stdout. A failed requirement raises
     AssertionError; a Julia run lasting over three minutes raises TimeoutExpired.
     Julia inherits the caller's package environment and uses folder's project.
+    When solution is true, pass --solution and require its local submission record.
     """
     run = subprocess.run(
-        ["julia", f"--project={folder}", "--startup-file=no", str(folder / "check_submission.jl")],
+        ["julia", f"--project={folder}", "--startup-file=no", str(folder / "check_submission.jl")]
+        + (["--solution"] if solution else []),
         cwd=folder.parent, env=os.environ.copy(), capture_output=True, text=True, timeout=180,
     )
     results = ROOT / "solution/results"
@@ -31,7 +33,8 @@ def run_case(folder: Path, label: str, expected: str) -> str:
     (results / f"{label}.txt").write_text(run.stdout + run.stderr)
     assert run.returncode == 0, (label, run.stderr)
     assert expected in run.stdout, (label, run.stdout)
-    assert (folder / "MANIFEST.txt").is_file(), label
+    output_root = folder / "solution" if solution else folder
+    assert (output_root / "MANIFEST.txt").is_file(), label
     print(f"PASS {label}: {expected}", flush=True)
     return run.stdout
 
@@ -50,10 +53,11 @@ def install_solution(folder: Path, track: str) -> None:
     path.write_text(text)
 
 
-def check_results(folder: Path) -> None:
+def check_results(folder: Path, *, results_root: Path | None = None) -> None:
     """Compare the completed Advanced CSV with independent Python calculations.
 
-    Read the price file and report in folder. Recompute the lattice tail from
+    Read the price files in folder and reports in results_root, or folder by
+    default. Recompute the lattice tail from
     binomial weights and the GBM probability with math.erfc. Check all three
     holding periods, observed 2026 outcomes, and the 63-day exported nodes.
     Raise AssertionError on a mismatch. The calculation uses Python math only,
@@ -75,7 +79,8 @@ def check_results(folder: Path) -> None:
     assert len(observed) == 170
     assert observed[0]["date"] == "2026-01-02"
     expected_dates = {21: "2026-02-02", 63: "2026-04-02", 126: "2026-07-06"}
-    rows = list(csv.DictReader(io.StringIO((folder / "results/advanced-results.csv").read_text())))
+    report_root = results_root if results_root is not None else folder
+    rows = list(csv.DictReader(io.StringIO((report_root / "results/advanced-results.csv").read_text())))
     assert [int(row["trading_days"]) for row in rows] == [21, 63, 126]
     for row in rows:
         n = int(row["trading_days"])
@@ -94,7 +99,7 @@ def check_results(folder: Path) -> None:
         assert float(row["observed_sale_price"]) == actual_price
         assert abs(float(row["observed_scaled_npv"])-actual_npv) < 1e-12
         assert (row["observed_beats_benchmark"] == "true") == (actual_npv > 0)
-    nodes = list(csv.DictReader(io.StringIO((folder / "results/terminal-nodes.csv").read_text())))
+    nodes = list(csv.DictReader(io.StringIO((report_root / "results/terminal-nodes.csv").read_text())))
     assert len(nodes) == 64
     assert abs(sum(float(row["probability"]) for row in nodes)-1) < 1e-8
     for row in nodes:
@@ -212,6 +217,65 @@ def check_student_outcome_reporting(folder: Path) -> None:
     print("PASS the report uses student-returned outcomes without recomputing them", flush=True)
 
 
+def check_source_selection(folder: Path) -> None:
+    """Exercise Include.jl's explicit student and local-solution paths.
+
+    Keep both starter files untouched. A helper loaded through Include.jl must
+    be available when the local solution is included. Verify that local runs
+    preserve student outputs, default runs never select a present solution,
+    and a missing local solution fails without falling back to the starter.
+    Restore the temporary Include.jl and track selection before returning.
+    """
+    include_path = folder / "Include.jl"
+    original_include = include_path.read_text()
+    original_track = (folder / "TRACK.txt").read_bytes()
+    starters = {track: (folder / f"src/{track}.jl").read_bytes()
+                for track in ("Standard", "Advanced")}
+    local_root = folder / "solution"
+    (local_root / "src").mkdir(parents=True)
+    helper_path = folder / "src/LoadingOrderFixture.jl"
+    helper_path.write_text("const _SOURCE_HELPER_READY = true;\n")
+    marker = "# Load the selected track after its dependencies and helpers -"
+    assert marker in original_include
+    include_path.write_text(original_include.replace(marker,
+        'include(joinpath(_ROOT, "src", "LoadingOrderFixture.jl"));\n\n' + marker))
+    try:
+        for track in ("Standard", "Advanced"):
+            source = (ROOT / f"solution/src/{track}.jl").read_text()
+            (local_root / f"src/{track}.jl").write_text("@assert _SOURCE_HELPER_READY\n\n" + source)
+        for track, total in (("Standard", 20), ("Advanced", 27)):
+            selected = track.lower()
+            (folder / "TRACK.txt").write_text(selected + "\n")
+            output = run_case(folder, f"{selected}-starter-with-local-solution", f"Public tests: 0/{total} passed")
+            assert f"Source file: src/{track}.jl" in output
+            check_missing_outcomes(folder, selected, output)
+            student_outputs = {path: path.read_bytes() for path in (folder / "results").glob("*.csv")}
+            student_outputs[folder / "MANIFEST.txt"] = (folder / "MANIFEST.txt").read_bytes()
+            output = run_case(folder, f"{selected}-local-solution", f"Public tests: {total}/{total} passed", solution=True)
+            assert f"Source file: solution/src/{track}.jl" in output
+            assert "Local solution check" in output
+            assert "upload" not in output.lower()
+            assert f"Saved solution/results/{selected}-results.csv." in output
+            record = (local_root / "MANIFEST.txt").read_text()
+            assert f"source file: solution/src/{track}.jl" in record
+            assert f"  solution/src/{track}.jl" in record
+            assert "local solution: true" in record
+            assert all(path.read_bytes() == content for path, content in student_outputs.items())
+            assert all((folder / f"src/{name}.jl").read_bytes() == content for name, content in starters.items())
+        check_results(folder, results_root=local_root)
+        (folder / "TRACK.txt").write_text("standard\n")
+        (local_root / "src/Standard.jl").unlink()
+        output = run_case(folder, "missing-local-solution", "Public tests: 0/20 passed", solution=True)
+        assert "Selected source file does not exist" in output
+        assert not any((local_root / "results").glob("*.csv"))
+        assert "MISSING  solution/src/Standard.jl" in (local_root / "MANIFEST.txt").read_text()
+    finally:
+        include_path.write_text(original_include)
+        (folder / "TRACK.txt").write_bytes(original_track)
+        helper_path.unlink()
+    print("PASS explicit source selection, helper loading, and separate local solution outputs", flush=True)
+
+
 def main() -> None:
     """Build the ZIP and check starter, completed, partial, and invalid submissions.
 
@@ -220,7 +284,7 @@ def main() -> None:
     invalid track. Also check unfinished answers and missing docstrings when
     all numerical checks pass, separation of forecast and comparison data,
     unfinished observed-outcome functions, use of student-returned outcomes,
-    and removal of old result files.
+    removal of old result files, and Include.jl's explicit local-solution mode.
     Saved run logs remain under solution/results; temporary files are removed.
     Require the local Standard and Advanced solutions under solution/src before
     building the release or running any checks.
@@ -248,6 +312,7 @@ def main() -> None:
         check_missing_outcomes(folder, "advanced", output)
         assert "Expected scaled NPV =" not in output
         assert "Mean growth rate =" not in output
+        check_source_selection(folder)
         install_solution(folder, "Standard")
         output = run_case(folder, "standard-reference", "Public tests: 20/20 passed")
         assert "Docstrings: All required functions have docstrings." in output

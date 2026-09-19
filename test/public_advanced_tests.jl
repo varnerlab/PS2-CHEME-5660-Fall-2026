@@ -1,4 +1,4 @@
-include(joinpath(@__DIR__, "public_standard_tests.jl"));
+# Include.jl loads the shared Standard checks before this file.
 
 """
     advanced_public_checks() -> Vector{NamedTuple}

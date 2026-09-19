@@ -67,7 +67,8 @@ market data.
    | Advanced | [src/Advanced.jl](src/Advanced.jl) | [responses/Advanced.md](responses/Advanced.md) |
 
    Complete only your selected track. Advanced includes its own copies of
-   the four Standard functions.
+   the four Standard functions. Leave the other track's source and response
+   files unchanged; their TODOs do not affect your grade.
 5. Complete the four Standard functions or six Advanced functions. Each
    function must return the values specified in its docstring. Put any helper
    functions you write in separate `.jl` files under [src](src). For example,
@@ -81,8 +82,10 @@ market data.
    julia --project=. --startup-file=no check_submission.jl
    ```
 
-   This script reads [TRACK.txt](TRACK.txt), loads your selected source file,
-   and runs the tests. It then calls your functions with the supplied data
+   This script loads [Include.jl](Include.jl), which reads
+   [TRACK.txt](TRACK.txt) and loads your selected source file, helpers,
+   report, and tests. The checker prints the source file it loaded, then
+   runs the tests. It calls your functions with the supplied data
    and **automatically prints the financial report**. After the test results,
    look for **PS2 financial results** in the terminal. You do not need to call
    a report function or run a separate report script.
@@ -134,9 +137,22 @@ calendar days.
 Assume you can trade at these supplied prices. Ignore dividends, fees,
 taxes, and the bid-ask spread.
 
-The **scaled NPV** is the sale proceeds discounted at the benchmark rate,
-minus the purchase cost, all divided by the purchase cost. A positive value
-means the trade beat the benchmark. The function docstrings give the formula.
+The **scaled NPV**, $\rho$, is the sale proceeds discounted at the benchmark
+rate, minus the purchase cost, all divided by the purchase cost. The function
+docstrings give the formula.
+
+The report's **Sale price to match the benchmark** is the sale price at which
+$\rho = 0$. It is the purchase price $S_0$ grown at the continuously compounded
+benchmark rate $g_y = 0.05$ per trading year. For a holding time of
+$T = \text{trading days}/252$ years, this price is given by:
+
+$$
+S_{\text{benchmark}} = S_0 e^{g_y T}.
+$$
+
+A sale price above this threshold gives $\rho > 0$ and beats the benchmark;
+a price below it gives $\rho < 0$. Selling exactly at the threshold matches
+the benchmark and does not count as beating it.
 
 ## Standard: build a lattice and calculate the observed outcomes
 
@@ -219,8 +235,11 @@ terminal prints percentages.
 
 Before uploading:
 
-1. Replace all three TODO answers in your selected response file. Keep the
-   `<!-- answer-N:start -->` and `<!-- answer-N:end -->` markers.
+1. Replace all three TODO answers in your selected response file. Put all
+   parts of each answer between its matching `<!-- answer-N:start -->` and
+   `<!-- answer-N:end -->` markers, keeping the supplied question numbers.
+   The markers are visible in the Markdown source editor but hidden in the
+   rendered preview.
 2. Create a ZIP of the entire PS2 folder, including your code, answers, data,
    project files, checker, tests, and generated `MANIFEST.txt`. If the checker
    cannot run, submit your attempted work without that record.

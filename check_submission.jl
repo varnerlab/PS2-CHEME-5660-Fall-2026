@@ -3,17 +3,16 @@ import Dates # record when this local check ran
 using SHA: sha256 # record which files were checked
 
 const _CHECK_ROOT = @__DIR__;
-include(joinpath(_CHECK_ROOT, "test", "Rubric.jl"));
 
 """
     clear_previous_results(root::String) -> Nothing
 
 Remove the three CSV files written by the PS2 report. Clear them before
-loading student code so a failed run cannot leave old results looking current.
+running checks or reporting results, even when loading the source failed.
 
 ### Arguments
 
-- `root`: Assignment folder.
+- `root`: Assignment folder, or its local `solution` folder for a solution run.
 
 ### Returns
 
@@ -32,47 +31,43 @@ function clear_previous_results(root::String)::Nothing
     return nothing;
 end
 
-# Load supplied tools and checks before the selected student source file -
+# Include.jl owns all assignment file loading and source-path selection -
 const _CHECK_SETUP = let
+    detail = "";
     try
-        clear_previous_results(_CHECK_ROOT);
-        track = String(strip(read(joinpath(_CHECK_ROOT, "TRACK.txt"), String)));
-        track in ("standard", "advanced") || throw(ArgumentError("TRACK.txt must contain exactly standard or advanced."));
         include(joinpath(_CHECK_ROOT, "Include.jl"));
-        include(joinpath(_CHECK_ROOT, "reports", "Finance.jl"));
-        include(joinpath(_CHECK_ROOT, "test", "public_$(track)_tests.jl"));
-        checks = track == "standard" ? standard_public_checks() : advanced_public_checks();
-        (track=track, checks=checks, detail="");
     catch caught
-        (track="unavailable", checks=NamedTuple[], detail=sprint(showerror, caught));
+        detail = sprint(showerror, caught);
     end
-end;
-
-# Load the selected student source file -
-const _CHECK_SOURCE = let
-    if isempty(_CHECK_SETUP.detail)
-        try
-            include(joinpath(_CHECK_ROOT, "src", titlecase(_CHECK_SETUP.track)*".jl"));
-            (tests_ran=true, detail="");
-        catch caught
-            (tests_ran=false, detail=sprint(showerror, caught));
-        end
-    else
-        (tests_ran=false, detail=_CHECK_SETUP.detail);
+    # Retain the selected track and checks when a later include fails -
+    track = isdefined(Main, :_TRACK) && _TRACK in ("standard", "advanced") ? _TRACK : "unavailable";
+    checks = isdefined(Main, :_PUBLIC_CHECKS) ? _PUBLIC_CHECKS : NamedTuple[];
+    source_path = isdefined(Main, :_SOURCE_PATH) ? _SOURCE_PATH : "";
+    solution = isdefined(Main, :_USE_SOLUTION) ? _USE_SOLUTION : "--solution" in ARGS;
+    output_root = isdefined(Main, :_OUTPUT_ROOT) ? _OUTPUT_ROOT :
+        solution ? joinpath(_CHECK_ROOT, "solution") : _CHECK_ROOT;
+    try
+        clear_previous_results(output_root);
+    catch caught
+        detail = isempty(detail) ? sprint(showerror, caught) : detail * "\n" * sprint(showerror, caught);
     end
+    (track=track, checks=checks, tests_ran=isempty(detail), detail=detail,
+        source_path=source_path, solution=solution, output_root=output_root);
 end;
 
 """
-    write_file_record(io::IO, root::String, track::String) -> Nothing
+    write_file_record(io::IO, root::String, track::String, source_path::String) -> Nothing
 
 Record the contents of TRACK.txt, Include.jl, all files under src/, and the
-selected response file.
+selected response file. Also record the actual selected source, including
+when it is a local solution.
 
 ### Arguments
 
 - `io`: Open output stream for the submission record.
 - `root`: Assignment folder.
 - `track`: Selected track, or `unavailable` after a setup error.
+- `source_path`: Actual selected source file, or an empty string after an early setup error.
 
 ### Returns
 
@@ -83,8 +78,9 @@ Marks missing required files as MISSING.
 
 Raises an error if a file cannot be read or the record cannot be written.
 """
-function write_file_record(io::IO, root::String, track::String)::Nothing
+function write_file_record(io::IO, root::String, track::String, source_path::String)::Nothing
     paths = [joinpath(root, "TRACK.txt"), joinpath(root, "Include.jl")];
+    isempty(source_path) || push!(paths, source_path);
     if isdir(joinpath(root, "src"))
         for (folder, _, names) in walkdir(joinpath(root, "src"))
             append!(paths, [joinpath(folder, name) for name in names]);
@@ -110,14 +106,15 @@ submission record.
 
 ### Inputs
 
-Uses `_CHECK_SETUP` for the selected track and its checks. Uses
-`_CHECK_SOURCE` to find whether the student's source file loaded.
+Uses `_CHECK_SETUP` for the selected track, source file, checks, output
+folder, and any loading error.
 
 ### Returns
 
 `nothing`. Prints results and next steps, and writes `MANIFEST.txt` in the
-assignment folder. After all checks pass, the teaching team must still
-review the code, documentation, and answers.
+assignment folder. A local solution run writes under `solution` instead.
+After all student checks pass, the teaching team must still review the
+code, documentation, and answers.
 
 ### Notes
 
@@ -128,11 +125,18 @@ Does not upload files or edit the student's code or answers.
 function main()::Nothing
     # Check the functions, docstrings, and answers -
     track = _CHECK_SETUP.track;
-    tests_ran = _CHECK_SOURCE.tests_ran;
+    tests_ran = _CHECK_SETUP.tests_ran;
+    source_name = isempty(_CHECK_SETUP.source_path) ? "unavailable" : relpath(_CHECK_SETUP.source_path, _CHECK_ROOT);
+    println("Source file: ", source_name);
+    if !isdefined(Main, :evaluate_public_checks)
+        println("Setup error: ", _CHECK_SETUP.detail);
+        println("Fix Include.jl and run the checker again. No submission record was written.");
+        return nothing;
+    end
     results = tests_ran ? evaluate_public_checks(_CHECK_SETUP.checks) :
-        failed_public_checks(_CHECK_SETUP.checks, _CHECK_SOURCE.detail);
+        failed_public_checks(_CHECK_SETUP.checks, _CHECK_SETUP.detail);
     print_public_test_report(results, "PS2 $(titlecase(track)) checks");
-    tests_ran || println("Setup or source error: ", _CHECK_SOURCE.detail);
+    tests_ran || println("Setup or source error: ", _CHECK_SETUP.detail);
     passed = count(result -> result.passed, results);
     all_passed = tests_ran && !isempty(results) && passed == length(results);
     names = track == "standard" ? STANDARD_DOCUMENTED_FUNCTIONS : ADVANCED_DOCUMENTED_FUNCTIONS;
@@ -148,26 +152,31 @@ function main()::Nothing
     # Calculate the financial results -
     if tests_ran
         try
-            print_finance_report(track, _CHECK_ROOT);
+            print_finance_report(track, _CHECK_ROOT;
+                output_directory=joinpath(_CHECK_SETUP.output_root, "results"));
         catch caught
             println("Financial report error: ", sprint(showerror, caught));
         end
     end
     # Write the submission record -
-    open(joinpath(_CHECK_ROOT, "MANIFEST.txt"), "w") do io
+    mkpath(_CHECK_SETUP.output_root);
+    record_path = joinpath(_CHECK_SETUP.output_root, "MANIFEST.txt");
+    open(record_path, "w") do io
         println(io, "PS2 CHEME 4/5660 Fall 2026 submission record");
         println(io, "generated: ", Dates.now());
         println(io, "track: ", track);
+        println(io, "source file: ", source_name);
+        println(io, "local solution: ", _CHECK_SETUP.solution);
         println(io, "tests ran: ", tests_ran);
         println(io, "public tests passed: $(passed)/$(length(results))");
         println(io, "required function docstrings present: ", documented);
         println(io, "three answer blocks contain text without TODO: ", answers);
         println(io, "local rubric feedback: ", feedback);
-        isempty(_CHECK_SOURCE.detail) || println(io, "setup/source error: ", _CHECK_SOURCE.detail);
-        write_file_record(io, _CHECK_ROOT, track);
+        isempty(_CHECK_SETUP.detail) || println(io, "setup/source error: ", _CHECK_SETUP.detail);
+        write_file_record(io, _CHECK_ROOT, track, _CHECK_SETUP.source_path);
     end
     # Show what to finish before submitting -
-    println("\nSubmission check");
+    println(_CHECK_SETUP.solution ? "\nLocal solution check" : "\nSubmission check");
     println("Track: ", track);
     println("Public tests: $(passed)/$(length(results)) passed");
     if !tests_ran
@@ -176,6 +185,11 @@ function main()::Nothing
         println("Docstrings: All required functions have docstrings.");
     else
         println("Docstrings: Restore the supplied documentation for ", join(string.(missing_docs), ", "), ".");
+    end
+    if _CHECK_SETUP.solution
+        println("Wrote ", relpath(record_path, _CHECK_ROOT), ".");
+        println("This run used the local solution. Student source files were not changed.");
+        return nothing;
     end
     if track in ("standard", "advanced")
         println("Answers: ", response_path);

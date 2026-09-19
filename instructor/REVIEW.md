@@ -233,3 +233,50 @@ GitHub heading anchors resolve. Canvas HTML retains balanced tags, link
 targets, and command formatting. Only comments changed in Julia source;
 the calculations were not changed or rerun. The rebuilt local student ZIP
 matches all 20 saved source files and excludes solutions, answers, and logs.
+
+## Central file loading and local solution runs — September 19, 2026
+
+Moved assignment file loading into `Include.jl`, including track selection,
+the report, public checks, optional helpers, and the selected source file.
+The checker now includes that file once and prints the selected source path.
+Optional helpers load before the selected source, so their definitions are
+available to it.
+
+The normal command selects `src`. Adding `--solution` selects the ignored
+`solution/src` directory; `TRACK.txt` determines Standard or Advanced in
+both modes. Solution runs save their reports and record under `solution`,
+preserve student outputs, and do not print student submission instructions.
+The instructor README gives the exact command. No source copying or path
+editing is needed.
+
+All 19 release cases pass, including both local solutions, both unchanged
+starters with solutions present, helper loading, and a missing local
+solution. Standard passes 20/20 public checks and Advanced passes 27/27;
+independent Python calculations agree with the reports. All 166 feedback
+checks also pass. The student sources, response files, price data, and local
+solutions are unchanged. Markdown renders to HTML, and the local student
+ZIP excludes solutions, answer guides, and saved logs.
+
+## Final student-instruction consistency pass — September 19, 2026
+
+Read the complete README, rubric, and both response files against the
+selected-track loader, function docstrings, financial report, and grading
+code. Confirmed that each requested result is available from the completed
+student functions or the explicitly requested hand calculation, with units
+matching the report. The rubric's counts and score boundaries match the
+20 Standard and 27 Advanced checks.
+
+Clarified that unselected-track TODOs do not affect the grade, that all parts
+of an answer belong inside its existing Markdown answer markers, and that
+a code-loading failure or failed checks do not make an otherwise qualifying
+initial submission a Frozen Zero. The README now uses the same benchmark
+symbol as Advanced Question 3 and explains the zero-NPV sale-price threshold.
+The questions, grading policy, and required calculations are unchanged.
+
+All 166 feedback checks pass. The actual response templates correctly flag
+their three placeholders and accept multipart text placed inside the existing
+markers. The four documents render to HTML; headings, tables, local links,
+and answer markers are preserved. Executable code, prices, track selection,
+and local solutions are unchanged. The local student ZIP was refreshed;
+no release was published. This is a document and implementation review,
+not a usability trial with students seeing the assignment for the first time.

@@ -11,7 +11,9 @@ trade outcomes. The Advanced track adds seven GBM checks, for **27 total**.
 
 Checks run separately. A check that cannot run counts as failed. Several use
 supplied inputs, so an unfinished early function does not block all later
-credit. A source file that cannot load receives 0.
+credit. A source file that cannot load receives a score of 0. Failed checks
+or a loading error do not cause a **Frozen Zero**: a readable ZIP containing
+attempted work submitted by the initial deadline still qualifies for revisions.
 
 | Score | Standard checks passed | Advanced checks passed | Other requirements |
 |:--:|:--:|:--:|:--|
@@ -39,9 +41,10 @@ that track's files, and rerun the checker.
   purpose, inputs, and output. Use short comments for non-obvious steps.
 - **Helper files:** Put helpers in separate `.jl` files under [src](src).
   Load them from [Include.jl](Include.jl), keeping its supplied lines.
-- **Finished work:** Remove completed TODOs and starter errors. Answer all
-  three questions with the requested numbers, units, and explanations,
-  including the three comparisons with observed 2026 outcomes.
+- **Finished work:** In your selected track's files, remove completed TODOs
+  and starter errors. Answer all three questions with the requested numbers,
+  units, and explanations, including the three comparisons with observed
+  2026 outcomes.
 
 The checker flags missing docstrings and answers; it cannot judge their
 quality. When all tests pass, it reports **pending completion review**.

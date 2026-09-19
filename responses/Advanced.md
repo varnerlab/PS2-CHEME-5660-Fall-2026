@@ -15,9 +15,12 @@ answer the questions below. The report includes the observed outcomes returned
 by your `observed_outcome` function. If a calculation shows `UNAVAILABLE`,
 finish or fix the relevant function, save your code, and rerun the command.
 
-Explain your reasoning in your own words. Replace each TODO with your answer,
-keeping the answer markers. Complete only this track's response file. Save
-your answers and rerun the checker before submitting.
+Explain your reasoning in your own words. In the Markdown source editor,
+replace each TODO with all parts of that answer. Keep your answer between
+its matching `<!-- answer-N:start -->` and `<!-- answer-N:end -->` markers;
+do not change their question numbers. The markers are hidden in the rendered
+preview. Complete only this track's response file. Save your answers and
+rerun the checker before submitting.
 
 Report prices in USD/share and probabilities and scaled NPVs as percentages.
 Report $u$ and $d$ as unitless price factors, $\mu_g$ and $\mu$ as percentages

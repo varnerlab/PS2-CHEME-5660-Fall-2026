@@ -61,7 +61,8 @@ function write_terminal_nodes(model::MyBinomialEquityPriceTree, days::Int,
 end
 
 """
-    print_finance_report(track::String, root::String) -> Nothing
+    print_finance_report(track::String, root::String;
+        output_directory::String=joinpath(root, "results")) -> Nothing
 
 Run the selected track's functions on the supplied AAPL prices and report
 the estimates, forecast probabilities, and trade outcomes calculated by the student.
@@ -70,14 +71,15 @@ the estimates, forecast probabilities, and trade outcomes calculated by the stud
 
 - `track`: `standard` or `advanced`.
 - `root`: Assignment folder.
+- `output_directory`: Folder for generated CSVs; local solution runs use `solution/results`.
 
 ### Returns
 
 `nothing`. Prints the estimated parameters, purchase price, and probabilities
 for 21, 63, and 126 trading days. For each holding period, also reports the
 observed sale date, price, scaled NPV, and whether the trade beat the benchmark.
-Writes `results/<track>-results.csv` and, when available,
-`results/terminal-nodes.csv` for the 63-day lattice.
+Writes `<track>-results.csv` in `output_directory`. Also writes
+`terminal-nodes.csv` for the 63-day lattice when available.
 The Advanced report also includes the expected scaled NPV and the separate
 example for Question 3.
 
@@ -95,7 +97,8 @@ outcomes can be completed independently. The separate Advanced example is
 shown when the student's probability function returns a result. The checker
 reports file errors and invalid input data.
 """
-function print_finance_report(track::String, root::String)::Nothing
+function print_finance_report(track::String, root::String;
+    output_directory::String=joinpath(root, "results"))::Nothing
     # Read the estimation and comparison prices -
     data = load_prices(joinpath(root, "data", "AAPL-2025.csv"));
     observed = load_prices(joinpath(root, "data", "AAPL-2026.csv"));
@@ -104,7 +107,7 @@ function print_finance_report(track::String, root::String)::Nothing
     observed.ticker == data.ticker || throw(ArgumentError("Use the same ticker for estimation and comparison."));
     first(observed.dates) > last(data.dates) || throw(ArgumentError("Comparison prices must come after the purchase date."));
     length(observed.prices) >= maximum(terms.holding_days) || throw(ArgumentError("The comparison file must cover all three holding periods."));
-    output = joinpath(root, "results");
+    output = output_directory;
     mkpath(output);
     println("\nPS2 financial results");
     println("Price history: ", data.ticker, ", ", first(data.dates), " to ", last(data.dates));
@@ -175,8 +178,9 @@ function print_finance_report(track::String, root::String)::Nothing
             @printf("Expected scaled NPV = %.4f%%\n", 100*expected);
         end
     end
-    println("\nSaved results/$(track)-results.csv.");
-    isfile(joinpath(output, "terminal-nodes.csv")) && println("Saved results/terminal-nodes.csv with the 63-day sale prices and probabilities.");
+    println("\nSaved ", relpath(joinpath(output, "$(track)-results.csv"), root), ".");
+    isfile(joinpath(output, "terminal-nodes.csv")) && println("Saved ",
+        relpath(joinpath(output, "terminal-nodes.csv"), root), " with the 63-day sale prices and probabilities.");
     println("In the CSV files, probabilities and scaled NPVs use decimal fractions; 0.05 means 5%.");
     return nothing;
 end

@@ -18,10 +18,17 @@ for the Canvas page. The HTML includes the gray command boxes and text highlight
 
 ## Completed solutions and answers
 
-- [Standard reference code](reference/Standard.jl)
-- [Advanced reference code](reference/Advanced.jl)
-- [Expected results and answer guide](RESPONSE-GUIDE.md)
+- [Standard reference code](../solution/src/Standard.jl)
+- [Advanced reference code](../solution/src/Advanced.jl)
+- [Expected results and answer guide](../solution/RESPONSE-GUIDE.md)
+- [Saved test results](../solution/results)
 - [Build and review record](REVIEW.md)
+
+The completed Julia code, answer guide, and saved test results are local files
+under [solution](../solution). The [ignore rule](../.gitignore) keeps this
+folder out of Git. These links resolve only when the local files are present.
+A fresh clone needs local copies of both Julia solutions under
+[solution/src](../solution/src) before the reference checks can run.
 
 ## Rebuild and check
 
@@ -37,9 +44,11 @@ checks partial credit, a source error, a bad track selection, and feedback
 when the code passes but an answer or docstring is missing. It compares
 the forecasts and observed 2026 outcomes with separate calculations in Python.
 It also changes only the 2026 prices to confirm that the forecasts stay fixed.
-The real student
-source and response files stay unchanged. Logs are saved under
-[results](results).
+The checks confirm that unfinished observed-outcome functions leave the report
+fields empty, that this function can earn credit independently of the forecasts,
+and that the report uses student-returned values. The real student source and
+response files stay unchanged. Logs are saved under
+[solution/results](../solution/results).
 
 To check answer detection, docstring detection, and every grading threshold,
 run:
@@ -48,7 +57,7 @@ run:
 julia --project=. --startup-file=no instructor/check_feedback.jl
 ```
 
-These instructor checks do not add to the 15 or 22 graded checks.
+These instructor checks do not add to the 20 or 27 graded checks.
 
 To rebuild the ZIP without rerunning the checks, run:
 
@@ -76,7 +85,7 @@ course snapshot, `af75badf5789f497e747173ca2daf783627bc911`.
 | Add probabilities of positive scaled NPV | L4a NPV rule and sale-day probability |
 | Estimate GBM parameters | L4b sample-mean and volatility estimates |
 | Calculate the GBM probability | L4b GBM NPV example |
-| Compare forecasts with observed outcomes | Apply the same scaled NPV rule to 2026 sale prices |
+| Calculate observed outcomes and compare them with forecasts | Implement the sale-observation selection, benchmark price, scaled NPV, and success rule |
 | Explain missing patterns in daily growth | L3a observations and L3b/L4b model assumptions |
 
 The L4b parameter example also demonstrates regression. PS2 explicitly chooses

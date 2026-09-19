@@ -20,7 +20,7 @@ include(joinpath(_ROOT, "src", "Support.jl")); # price data, fixed inputs, and e
 
 # Load optional student helper files -
 # TODO (optional): Add include calls for your helper files here.
-# Store each helper file in src/. Replace MyHelpers.jl with your filename
+# Store each helper file in src/. Replace MyHelperFunctions.jl with your filename
 # and uncomment the example after creating the file.
 # If a helper file uses definitions from another file, load that other file first.
-# include(joinpath(_ROOT, "src", "MyHelpers.jl"));
+# include(joinpath(_ROOT, "src", "MyHelperFunctions.jl"));

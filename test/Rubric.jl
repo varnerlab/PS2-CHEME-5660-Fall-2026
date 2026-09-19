@@ -241,7 +241,7 @@ end
 
 # Functions that must have docstrings -
 const STANDARD_DOCUMENTED_FUNCTIONS = [
-    :estimate_lattice, :build_lattice, :lattice_probability,
+    :estimate_lattice, :build_lattice, :lattice_probability, :observed_outcome,
 ];
 
 const ADVANCED_DOCUMENTED_FUNCTIONS = [

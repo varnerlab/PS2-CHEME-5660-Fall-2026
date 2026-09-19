@@ -1,6 +1,10 @@
-# PS2 Advanced: Complete these three lattice functions and the two GBM functions.
+# PS2 Advanced: Complete the four shared functions and the two GBM functions.
 # Keep the function names, arguments, return types, and docstrings.
 # The checker supplies valid inputs. You do not need to add input checks.
+# Save your code, then run from the PS2 folder:
+# julia --project=. --startup-file=no check_submission.jl
+# This command runs the tests, calls your functions with the supplied data,
+# and prints the financial report. No separate report call is needed.
 
 """
     estimate_lattice(prices::Vector{Float64}, dt::Float64) -> NamedTuple
@@ -121,6 +125,55 @@ function lattice_probability(model::MyBinomialEquityPriceTree, days::Int,
 end
 
 """
+    observed_outcome(initial_price::Float64, observed::NamedTuple, days::Int,
+        benchmark::Float64, dt::Float64) -> NamedTuple
+
+Calculate the outcome of buying at the purchase price and selling after the
+specified number of trading days.
+
+### Arguments
+
+- `initial_price`: Positive purchase price in USD/share, supplied separately
+  from the later sale observations.
+- `observed`: The named tuple returned by `load_prices` for the comparison
+  file. Its `dates` and `prices` vectors are ordered from oldest to newest.
+  Position 1 is the first trading day after purchase; day 0 is not in this file.
+- `days`: Positive whole number of trading days from purchase to sale. The
+  comparison file contains at least this many observations.
+- `benchmark`: Continuously compounded rate per trading year.
+- `dt`: Length of one trading day, measured in trading years.
+
+### Returns
+
+A named tuple with these five entries:
+
+- `sale_date`: The observed sale date, as a `Date`.
+- `sale_price`: The observed sale price, in USD/share.
+- `benchmark_price`: The sale price needed to match the benchmark, in USD/share.
+- `scaled_npv`: The discounted sale proceeds minus the purchase cost, divided
+  by the purchase cost. Return a decimal fraction; `0.01` means 1%.
+- `beats_benchmark`: A Boolean that is `true` only when `scaled_npv > 0`.
+  Equality with the benchmark does not count as success.
+
+### Method
+
+Select observation `days` from the comparison file. Count price observations,
+not calendar days. Convert the holding period to trading years using
+`T = days * dt`. The benchmark price is `initial_price * exp(benchmark * T)`.
+Calculate the scaled NPV using the same discounting rule as in the lattice:
+`(sale_price / initial_price) * exp(-benchmark * T) - 1`.
+
+Use unrounded values for the calculations and the success comparison.
+"""
+function observed_outcome(initial_price::Float64, observed::NamedTuple, days::Int,
+    benchmark::Float64, dt::Float64)::NamedTuple
+    # TODO 9: Select the sale date and price from observation days.
+    # TODO 10: Calculate the benchmark price and scaled NPV using the holding time in years.
+    # TODO 11: Return all five named entries described in the docstring.
+    error("Complete observed_outcome in your selected source file.");
+end
+
+"""
     estimate_gbm(prices::Vector{Float64}, dt::Float64) -> NamedTuple
 
 Estimate the mean growth rate, volatility parameter, and price drift for the GBM model.
@@ -157,10 +210,10 @@ of growth rates in the denominator. The probability calculation uses `mu_g`;
 the expected NPV calculation uses `mu`.
 """
 function estimate_gbm(prices::Vector{Float64}, dt::Float64)::NamedTuple
-    # TODO 9: Use log_growth_matrix with Δt=dt and risk_free_rate=0.0 to get growth.
-    # TODO 10: Calculate mu_g = mean(growth), sigma = std(growth) * sqrt(dt),
+    # TODO 12: Use log_growth_matrix with Δt=dt and risk_free_rate=0.0 to get growth.
+    # TODO 13: Calculate mu_g = mean(growth), sigma = std(growth) * sqrt(dt),
     # and mu = mu_g + sigma^2 / 2.
-    # TODO 11: Return (mu_g=mu_g, sigma=sigma, mu=mu).
+    # TODO 14: Return (mu_g=mu_g, sigma=sigma, mu=mu).
     error("Complete estimate_gbm in your selected source file.");
 end
 
@@ -197,10 +250,10 @@ benchmark rate. No price simulation is needed.
 """
 function gbm_probability(parameters::NamedTuple, days::Int,
     benchmark::Float64, dt::Float64)::Float64
-    # TODO 12: If parameters.sigma is zero, return 1.0 when
+    # TODO 15: If parameters.sigma is zero, return 1.0 when
     # parameters.mu_g > benchmark and 0.0 otherwise.
-    # TODO 13: For positive parameters.sigma, set T = days * dt and calculate
+    # TODO 16: For positive parameters.sigma, set T = days * dt and calculate
     # z = (benchmark - parameters.mu_g) * sqrt(T) / parameters.sigma.
-    # TODO 14: Return ccdf(Normal(), z), the probability above z.
+    # TODO 17: Return ccdf(Normal(), z), the probability above z.
     error("Complete gbm_probability in your selected source file.");
 end

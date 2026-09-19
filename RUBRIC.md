@@ -4,10 +4,10 @@ Your selected track is graded out of **4**. An accepted Advanced score of 4
 also earns **one Magic Point**, once for PS2. Select your track in
 [TRACK.txt](TRACK.txt).
 
-The Standard track has **15 checks**: four for parameter estimates, five for
-lattice construction, five for the probability calculation, and one that
-uses all three functions with the supplied data. The Advanced track adds
-seven GBM checks, for **22 total**.
+The Standard track has **20 checks**: four for parameter estimates, five for
+lattice construction, five for the probability calculation, one that uses
+all three lattice functions with the supplied data, and five for observed
+trade outcomes. The Advanced track adds seven GBM checks, for **27 total**.
 
 Checks run separately. A check that cannot run counts as failed. Several use
 supplied inputs, so an unfinished early function does not block all later
@@ -16,12 +16,12 @@ credit. A source file that cannot load receives 0.
 | Score | Standard checks passed | Advanced checks passed | Other requirements |
 |:--:|:--:|:--:|:--|
 | 0 | 0 | 0 | — |
-| 1 | 1–7 | 1–11 | — |
-| 2 | 8–14 | 12–21 | — |
-| 3 | 15 | 22 | At least one requirement below is not met |
-| 4 | 15 | 22 | All requirements below are met |
+| 1 | 1–10 | 1–13 | — |
+| 2 | 11–19 | 14–26 | — |
+| 3 | 20 | 27 | At least one requirement below is not met |
+| 4 | 20 | 27 | All requirements below are met |
 
-Passing only the 15 shared checks on the Advanced track earns 2. We grade
+Passing only the 20 shared checks on the Advanced track earns 2. We grade
 the selected track. To change tracks, update [TRACK.txt](TRACK.txt), complete
 that track's files, and rerun the checker.
 
@@ -31,7 +31,10 @@ that track's files, and rerun the checker.
   growth rates, lattice estimates, and construction. Add the probabilities
   of sale-day nodes with positive scaled NPV. Advanced also uses the stated
   GBM estimates and normal probability formula. Estimate the model parameters
-  from 2025 prices only.
+  from 2025 prices only. In both tracks, implement the observed-outcome
+  function to select the 2026 sale observation and calculate the benchmark
+  price, scaled NPV, and success flag. The supplied report displays your
+  results; it does not perform those calculations for you.
 - **Documentation:** Keep the supplied docstrings. Document each helper's
   purpose, inputs, and output. Use short comments for non-obvious steps.
 - **Helper files:** Put helpers in separate `.jl` files under [src](src).

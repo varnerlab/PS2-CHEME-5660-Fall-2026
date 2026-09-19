@@ -64,7 +64,7 @@ end
 end
 
 @testset "Grading thresholds" begin
-    for total in (15, 22), passed in 0:total
+    for total in (20, 27), passed in 0:total
         results = [(passed=i <= passed,) for i in 1:total];
         expected = passed == 0 ? 0 : 2*passed <= total ? 1 : passed < total ? 2 : 3;
         @test rubric_score(results; tests_ran=true, completion=false) == expected;

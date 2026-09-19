@@ -1,6 +1,10 @@
-# PS2 Standard: Complete the three functions below.
+# PS2 Standard: Complete the four functions below.
 # Keep the function names, arguments, return types, and docstrings.
 # The checker supplies valid inputs. You do not need to add input checks.
+# Save your code, then run from the PS2 folder:
+# julia --project=. --startup-file=no check_submission.jl
+# This command runs the tests, calls your functions with the supplied data,
+# and prints the financial report. No separate report call is needed.
 
 """
     estimate_lattice(prices::Vector{Float64}, dt::Float64) -> NamedTuple
@@ -118,4 +122,53 @@ function lattice_probability(model::MyBinomialEquityPriceTree, days::Int,
     # TODO 8: Add the probabilities of nodes with scaled NPV > 0.
     # Return the sum, or 0.0 if no sale-day price beats the benchmark.
     error("Complete lattice_probability in your selected source file.");
+end
+
+"""
+    observed_outcome(initial_price::Float64, observed::NamedTuple, days::Int,
+        benchmark::Float64, dt::Float64) -> NamedTuple
+
+Calculate the outcome of buying at the purchase price and selling after the
+specified number of trading days.
+
+### Arguments
+
+- `initial_price`: Positive purchase price in USD/share, supplied separately
+  from the later sale observations.
+- `observed`: The named tuple returned by `load_prices` for the comparison
+  file. Its `dates` and `prices` vectors are ordered from oldest to newest.
+  Position 1 is the first trading day after purchase; day 0 is not in this file.
+- `days`: Positive whole number of trading days from purchase to sale. The
+  comparison file contains at least this many observations.
+- `benchmark`: Continuously compounded rate per trading year.
+- `dt`: Length of one trading day, measured in trading years.
+
+### Returns
+
+A named tuple with these five entries:
+
+- `sale_date`: The observed sale date, as a `Date`.
+- `sale_price`: The observed sale price, in USD/share.
+- `benchmark_price`: The sale price needed to match the benchmark, in USD/share.
+- `scaled_npv`: The discounted sale proceeds minus the purchase cost, divided
+  by the purchase cost. Return a decimal fraction; `0.01` means 1%.
+- `beats_benchmark`: A Boolean that is `true` only when `scaled_npv > 0`.
+  Equality with the benchmark does not count as success.
+
+### Method
+
+Select observation `days` from the comparison file. Count price observations,
+not calendar days. Convert the holding period to trading years using
+`T = days * dt`. The benchmark price is `initial_price * exp(benchmark * T)`.
+Calculate the scaled NPV using the same discounting rule as in the lattice:
+`(sale_price / initial_price) * exp(-benchmark * T) - 1`.
+
+Use unrounded values for the calculations and the success comparison.
+"""
+function observed_outcome(initial_price::Float64, observed::NamedTuple, days::Int,
+    benchmark::Float64, dt::Float64)::NamedTuple
+    # TODO 9: Select the sale date and price from observation days.
+    # TODO 10: Calculate the benchmark price and scaled NPV using the holding time in years.
+    # TODO 11: Return all five named entries described in the docstring.
+    error("Complete observed_outcome in your selected source file.");
 end

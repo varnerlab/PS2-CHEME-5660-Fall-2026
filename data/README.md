@@ -24,8 +24,13 @@ December 31, 2025 price is the assumed purchase price at day 0.
 
 The first 2026 price observation, on January 2, is day 1. Use observations 21,
 63, and 126 as the three sale prices. The header is not an observation.
-The report calculates the scaled NPV and checks whether each sale beat the
-benchmark.
+Complete the observed-outcome function in your selected source file
+([Standard](../src/Standard.jl) or [Advanced](../src/Advanced.jl)) to select
+those observations and calculate the benchmark price, scaled NPV, and whether
+the trade beat the benchmark. When you run
+[check_submission.jl](../check_submission.jl), it automatically calls your
+function for each holding period and displays the returned values in the
+financial report.
 
 The [assignment_terms](../src/Support.jl) function supplies the time step of
 1/252 trading year and the benchmark rate of 5% per trading year, compounded

@@ -1,7 +1,7 @@
 """
     standard_public_checks() -> Vector{NamedTuple}
 
-Define the 15 public checks for the three Standard functions.
+Define the 20 public checks for the four Standard functions.
 
 ### Returns
 
@@ -11,8 +11,9 @@ returns `true` when the check passes.
 ### Notes
 
 Some checks supply their own parameters or lattice, so they can pass even
-if another student function is unfinished. The final check uses all three
-functions with the supplied AAPL prices.
+if another student function is unfinished. One check uses all three lattice
+functions with the supplied AAPL prices. Five checks use separate sample
+prices to check the student's observed-outcome calculation.
 """
 function standard_public_checks()::Vector{NamedTuple}
     prices = [100.0, 110.0, 99.0, 99.0, 79.2, 95.04];
@@ -21,6 +22,8 @@ function standard_public_checks()::Vector{NamedTuple}
     tree = () -> build_lattice(parameters, 80.0, 3);
     supplied = () -> populate(build(MyBinomialEquityPriceTree, parameters); Sₒ=100.0, h=2);
     probability = (benchmark, dt) -> lattice_probability(supplied(), 2, benchmark, dt);
+    observed = (dates=[Date(2026, 1, 2), Date(2026, 1, 5), Date(2026, 1, 9), Date(2026, 1, 12)],
+        ticker="EXAMPLE", prices=[97.0, 120.0, 105.0, 100.0]); # gaps distinguish observations from calendar days
 
     return [
         (name="Estimate the average up factor", evaluate=() -> isapprox(fitted().u, 1.15; atol=1e-12)),
@@ -57,7 +60,7 @@ function standard_public_checks()::Vector{NamedTuple}
         (name="Return zero when no outcome beats the benchmark", evaluate=() -> probability(2.0, 0.5) == 0.0),
         (name="Return one when every outcome beats the benchmark", evaluate=() -> isapprox(probability(-2.0, 0.5), 1.0; atol=1e-10)),
         (name="Convert trading days to years when discounting", evaluate=() -> isapprox(probability(1.5, 1/252), 0.84; atol=1e-10)),
-        (name="Run all three tasks on the supplied AAPL history", evaluate=() -> begin
+        (name="Run the three lattice functions on the supplied AAPL history", evaluate=() -> begin
             data = load_prices(joinpath(_PATH_TO_DATA, "AAPL-2025.csv"));
             terms = assignment_terms();
             params = estimate_lattice(data.prices, terms.dt);
@@ -72,6 +75,28 @@ function standard_public_checks()::Vector{NamedTuple}
             expected = sum(Float64(binomial(big(n), k))*p^k*(1-p)^(n-k)
                 for k in 0:n if u^k*d^(n-k)*exp(-terms.benchmark*n*terms.dt) > 1);
             isapprox(result, expected; atol=1e-8);
+        end),
+        (name="Select the observed sale date and price by trading-day position", evaluate=() -> begin
+            all(1:4) do days
+                result = observed_outcome(100.0, observed, days, 0.0, 1/252);
+                result.sale_date == observed.dates[days] && result.sale_price == observed.prices[days];
+            end;
+        end),
+        (name="Calculate the benchmark price using the purchase price, rate, and time step", evaluate=() -> begin
+            result = observed_outcome(80.0, observed, 3, log(1.1), 2/3);
+            isapprox(result.benchmark_price, 96.8; atol=1e-10);
+        end),
+        (name="Calculate a positive observed scaled NPV and identify success", evaluate=() -> begin
+            result = observed_outcome(100.0, observed, 2, log(1.1), 0.5);
+            isapprox(result.scaled_npv, 1/11; atol=1e-12) && result.beats_benchmark === true;
+        end),
+        (name="Distinguish an observed price gain from beating the benchmark", evaluate=() -> begin
+            result = observed_outcome(100.0, observed, 3, log(1.1), 1/3);
+            isapprox(result.scaled_npv, -1/22; atol=1e-12) && result.beats_benchmark === false;
+        end),
+        (name="Exclude an observed sale that exactly matches the benchmark", evaluate=() -> begin
+            result = observed_outcome(100.0, observed, 4, 0.0, 1/252);
+            result.benchmark_price == 100.0 && result.scaled_npv == 0.0 && result.beats_benchmark === false;
         end),
     ];
 end

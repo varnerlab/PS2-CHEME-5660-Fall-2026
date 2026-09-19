@@ -28,6 +28,8 @@ You can also paste this file's contents into the Canvas HTML editor.
   Standard uses a binomial lattice. Advanced also uses geometric Brownian
   motion (GBM) and compares expected net present value (NPV) with the
   probability of beating the benchmark.
+  In both tracks, write the code that selects the observed sale prices and
+  calculates the benchmark prices, scaled NPVs, and whether the trades succeeded.
 </p>
 
 <h3>Download and instructions</h3>
@@ -85,14 +87,25 @@ You can also paste this file's contents into the Canvas HTML editor.
 
 <pre style="display: block; padding: 10px; margin: 0 0 10px; color: #333333; background-color: #f5f5f5; border: 1px solid #cccccc; border-radius: 4px; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap;"><code style="color: #333333; background-color: #f5f5f5; padding: 0; font-family: inherit; font-size: inherit;">julia --project=. --startup-file=no -e 'using Pkg; Pkg.instantiate()'</code></pre>
 
-<p>Then check your saved work with:</p>
+<p>After saving your code, run this command to check it and generate the financial report:</p>
 
 <pre style="display: block; padding: 10px; margin: 0 0 10px; color: #333333; background-color: #f5f5f5; border: 1px solid #cccccc; border-radius: 4px; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap;"><code style="color: #333333; background-color: #f5f5f5; padding: 0; font-family: inherit; font-size: inherit;">julia --project=. --startup-file=no check_submission.jl</code></pre>
 
 <p>
-  The checker runs 15 public tests for Standard or 22 for Advanced. It
-  reports missing docstrings and unfinished answers, displays the available
-  calculations, and creates <code style="color: #c7254e; background-color: #f5f5f5; padding: 2px 4px; border-radius: 3px; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 90%;">MANIFEST.txt</code>.
+  The checker runs 20 public tests for Standard or 27 for Advanced, then
+  <strong>automatically calls your functions and prints the financial report</strong>.
+  You do not need a separate report command. Look for
+  <strong>PS2 financial results</strong> in the terminal and use those values
+  to answer the three questions in your selected response file. The report
+  includes the observed outcomes calculated by your code. Unfinished
+  calculations show <code style="color: #c7254e; background-color: #f5f5f5; padding: 2px 4px; border-radius: 3px; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 90%;">UNAVAILABLE</code>;
+  save your code and rerun the command as you complete the functions.
+</p>
+
+<p>
+  Save your answers and run the same command again before submitting.
+  The checker also reports missing docstrings and unfinished answers and
+  creates <code style="color: #c7254e; background-color: #f5f5f5; padding: 2px 4px; border-radius: 3px; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 90%;">MANIFEST.txt</code>.
   It does <strong>not</strong> upload anything to Canvas.
   After you pass every test, the teaching team must review your code,
   documentation, and answers before awarding a score of 4.

@@ -1,39 +1,48 @@
-# Problem Set 2: What Is the Probability of Beating a Benchmark?
+# Problem Set 2 (PS2): What Is the Probability of Beating a Benchmark?
 
 Suppose you buy [Apple (AAPL) shares](https://finance.yahoo.com/quote/AAPL)
-and sell them after 63 trading days. What is the probability of beating a
-benchmark that grows at 5% per trading year, compounded continuously?
+and sell them after a chosen number of trading days. What is the probability
+of beating an alternative benchmark investment that grows at 5% per trading
+year (252 trading days), compounded continuously?
+Let's explore this question.
 
-Estimate the model parameters from **2025 prices**, then compare the forecasts
-with **what happened in 2026**. Choose one track:
+Choose one track:
 
 - **Standard:** Build a binomial lattice, which allows two possible price
-  changes each day, and calculate the probability of beating the benchmark.
-- **Advanced:** Complete the lattice calculation and repeat it with geometric
-  Brownian motion (GBM). Compare the models' probabilities. Also examine a
-  case where expected net present value (NPV) is positive, but the probability
-  of beating the benchmark is below 50%.
+  changes each day, and calculate the probability of beating the benchmark
+  on the sale day.
+- **Advanced:** Complete the same binomial lattice calculation in the
+  Advanced source file, then repeat the probability calculation using a
+  geometric Brownian motion (GBM) model. Compare the binomial and GBM models'
+  probabilities. Also examine a case where the expected scaled net present
+  value (NPV) is positive, but the probability of beating the benchmark is
+  below 50%.
 
-This assignment covers weeks 3 and 4 of CHEME 4/5660. It uses the same Julia
-version, course package, and submission process as PS1.
+__Parameters__: Estimate your model parameters from **2025 prices**, then
+compare the forecasts with **what happened in 2026**. Calculate the observed
+trade outcomes in your own code using the supplied 2026 prices.
+
+__Lectures__: This problem set covers weeks 3 and 4 of CHEME 4/5660. It uses
+the same Julia version, course package, and submission process as PS1.
 
 ## Dates and grading
 
 - **Release:** Sunday, September 20, 2026.
 - **Due:** Sunday, October 4, 2026 at 11:59 PM ET. Upload your ZIP to Canvas.
 - **Revisions:** Until December 19, 2026 at 11:59 PM ET after a qualifying
-  initial submission. We keep your highest score, including across tracks.
-- **Score:** Out of 4. An accepted Advanced score of 4 earns one Magic Point,
-  once for PS2.
+  initial submission. We keep your highest score, even if you change tracks.
+- **Score:** Out of 4. An Advanced score of 4, confirmed by the teaching
+  team, also earns one Magic Point.
 
 Submit a readable ZIP with attempted work by the initial deadline, even if
 checks fail. A missing, empty, or unreadable submission receives a **Frozen
-Zero** and cannot be revised for credit or earn a Magic Point. See
-[RUBRIC.md](RUBRIC.md) for grading, revision, and independent-work rules.
+Zero** and cannot be revised for credit or earn a Magic Point.
+
+See the [grading rubric](RUBRIC.md) for grading, revision, and independent-work rules.
 
 ## Getting started
 
-Use Julia `1.12.7`. Both price files are supplied; you do not need to download
+Use Julia `1.12.7`. Both price files are supplied; you do not need to download any
 market data.
 
 1. Download the `Source code (zip)` archive from the tagged
@@ -58,21 +67,44 @@ market data.
    | Advanced | [src/Advanced.jl](src/Advanced.jl) | [responses/Advanced.md](responses/Advanced.md) |
 
    Complete only your selected track. Advanced includes its own copies of
-   the three Standard functions.
-5. Complete the three Standard functions or five Advanced functions. Put
-   helper functions in separate `.jl` files under [src](src). Load those
-   files from [Include.jl](Include.jl); put all helper `include(...)` calls there.
-6. Answer the three questions in your selected response file. Include the
-   requested numbers, units, and explanations.
-7. Run [check_submission.jl](check_submission.jl) as you work:
+   the four Standard functions.
+5. Complete the four Standard functions or six Advanced functions. Each
+   function must return the values specified in its docstring. Put any helper
+   functions you write in separate `.jl` files under [src](src). For example,
+   you could create `src/MyHelperFunctions.jl`. Load your helper files from
+   [Include.jl](Include.jl), using the commented example with your own filenames.
+   Put all helper `include(...)` calls there.
+6. Save your code, then run the [check_submission.jl](check_submission.jl)
+   script from the root PS2 folder:
 
    ```text
    julia --project=. --startup-file=no check_submission.jl
    ```
 
+   This script reads [TRACK.txt](TRACK.txt), loads your selected source file,
+   and runs the tests. It then calls your functions with the supplied data
+   and **automatically prints the financial report**. After the test results,
+   look for **PS2 financial results** in the terminal. You do not need to call
+   a report function or run a separate report script.
+
+   For both tracks, the checker runs the calculations for 21, 63, and 126
+   trading days and checks that the lattice's sale-day probabilities sum
+   to one, allowing small rounding differences.
+
+   Run the checker as you work; you do not need to finish all functions or
+   answers first. Unfinished calculations are shown as `UNAVAILABLE`. Fix
+   errors in your code, save it, and run the same command again to update
+   the results.
+7. Use the financial results to answer the three questions in your selected
+   response file. Include the requested numbers, units, and explanations.
+   Save your answers and run the same checker command again before submitting.
+
 Keep the supplied function names, arguments, return types, and docstrings.
-Replace the starter errors with your code and remove completed TODOs. Document
-each helper's purpose, inputs, and output. Keep the supplied lines in
+Replace the starter errors with your code. Delete each TODO comment once
+you finish that part.
+
+If you write any custom helper functions, document each helper's purpose,
+inputs, and output. Keep the supplied lines in
 [Include.jl](Include.jl) when adding helper files. Leave the other support
 code, data, reports, tests, and checker unchanged.
 
@@ -87,42 +119,66 @@ The two price files have different roles:
 
 Each price is a daily average weighted by the shares in each trade. The
 [data notes](data/README.md) describe the sources. The 250 prices from 2025
-give 249 daily changes. **Keep the model estimates fixed when checking 2026.**
+give 249 daily changes. Use 252 trading days per year for time and rate
+conversions, even though this file contains 250 prices.
+**Use the 2025 parameter estimates for all three
+forecasts; do not re-estimate the parameters using 2026 prices.**
 
-Assume you buy at the December 31, 2025 price. This is **day 0**. Calculate
-forecast probabilities for **21, 63, and 126 trading days**. January 2 is the first
-price observation in the 2026 file, so it is day 1. Use the 21st, 63rd, and
-126th observations as the sale prices. Count observations, not calendar days.
+Assume you buy at the December 31, 2025 price, the last price in
+[AAPL-2025.csv](data/AAPL-2025.csv). This is **day 0**. Calculate forecast
+probabilities for **21, 63, and 126 trading days**. January 2 is the first
+price observation in the 2026 file, so it is day 1. Read the sale date and
+price from the 21st, 63rd, and 126th observations. Count observations, not
+calendar days.
 
-Assume you can trade at these prices. Ignore dividends, fees, taxes, and the bid-ask spread.
+Assume you can trade at these supplied prices. Ignore dividends, fees,
+taxes, and the bid-ask spread.
 
-## Standard: build a lattice
+The **scaled NPV** is the sale proceeds discounted at the benchmark rate,
+minus the purchase cost, all divided by the purchase cost. A positive value
+means the trade beat the benchmark. The function docstrings give the formula.
 
-Complete these functions. Their docstrings give the package calls and return
-values. Use the [lecture examples](#lecture-examples) for the formulas.
+## Standard: build a lattice and calculate the observed outcomes
+
+In the Standard track, you will use a binomial lattice model to calculate
+the probability of each possible sale-day price. From these probabilities,
+you can calculate the probability of beating the benchmark. The lattice is
+built from the purchase price, the estimated up and down factors, and the
+probability of an up move.
+
+Complete the following functions. Their docstrings give the package calls
+and return values. Use the [lecture examples](#lecture-examples) for the formulas.
 
 | Function | Task |
 |:--|:--|
 | [estimate_lattice](src/Standard.jl) | Use the course package to estimate the daily up and down price factors and the probability of an up move. |
 | [build_lattice](src/Standard.jl) | Use the package to build prices and probabilities from the purchase day through the sale day. |
 | [lattice_probability](src/Standard.jl) | Calculate the probability of beating the benchmark on the sale day. |
+| [observed_outcome](src/Standard.jl) | Select the observed sale date and price, calculate the benchmark price and scaled NPV, and determine whether the trade beat the benchmark. |
 
 For the Advanced track, use the copies in [src/Advanced.jl](src/Advanced.jl).
-The checker runs all three holding periods and checks that node probabilities
-sum to one, allowing small rounding differences.
 
-## Advanced: repeat with GBM
+When you run [check_submission.jl](check_submission.jl), its financial report
+displays the values your functions return. If
+[observed_outcome](src/Standard.jl) is unfinished, the observed results and
+benchmark prices remain unavailable, even when the forecast functions work.
 
-Use the same 2025 prices, purchase price, holding periods, and benchmark.
-Complete the three lattice functions and these two functions in
-[src/Advanced.jl](src/Advanced.jl):
+## Advanced: repeat with geometric Brownian motion (GBM)
+
+In the Advanced track, you will also use a geometric Brownian motion (GBM)
+model to calculate the probability of beating the benchmark. Use the same
+2025 prices, purchase price, holding periods, and benchmark for both models.
+
+Complete the three lattice functions, the observed-outcome function, and
+these two additional functions in [src/Advanced.jl](src/Advanced.jl):
 
 | Function | Task |
 |:--|:--|
 | [estimate_gbm](src/Advanced.jl) | Estimate the mean growth rate, volatility parameter, and price drift from the daily growth rates. |
 | [gbm_probability](src/Advanced.jl) | Calculate the probability of beating the benchmark using the normal distribution. |
 
-The report also computes the expected scaled NPV. In
+For the Advanced track, the report uses a [supplied helper](src/Support.jl)
+to compute the expected scaled NPV under the GBM model. In
 [Advanced Question 3](responses/Advanced.md#3-can-expected-npv-be-positive-with-less-than-a-50-chance-of-success),
 explain how this value can be positive when the probability of beating the
 benchmark is below 50%.
@@ -138,23 +194,28 @@ Use these course examples for the formulas and function calls:
 
 ## Check and submit your work
 
-Save your code and answers, then run the checker from Step 7. It prints
-results, identifies missing answers and docstrings, and writes `MANIFEST.txt`
-to record the files checked. It does not upload your work. Starter functions
-fail the tests until you complete them; unfinished calculations show
-`UNAVAILABLE`.
+Save your code and answers, then rerun the checker command from Step 6. The
+same command runs the tests, generates the financial report, identifies
+missing answers and docstrings, and writes `MANIFEST.txt` to record the files
+checked. It __does not__ upload your work.
 
-The checker saves these files when the calculations can run:
+Starter functions fail the tests until you complete them; unfinished
+calculations show `UNAVAILABLE`.
+
+The checker saves one results file for your selected track. It also saves
+the 63-day lattice nodes when that calculation is available:
 
 | File | Contents |
 |:--|:--|
-| `results/standard-results.csv` | Lattice forecasts and observed 2026 outcomes |
-| `results/advanced-results.csv` | Both forecasts, expected scaled NPV, and observed outcomes |
+| `results/standard-results.csv` | Your lattice forecasts and observed-outcome calculations |
+| `results/advanced-results.csv` | Your forecasts and observed-outcome calculations, plus expected scaled NPV |
 | `results/terminal-nodes.csv` | Each 63-day lattice sale price, probability, and scaled NPV |
 
-Each run replaces the generated results. An empty field means that a
-calculation was unavailable. In the CSV files, 0.05 means 5% for probabilities
-and scaled NPVs. The terminal prints percentages.
+Each run replaces the generated results. In the CSV files, an unavailable
+calculation leaves an empty field. The report displays the observed outcomes
+returned by your code; it does not calculate them for you. Probabilities and
+scaled NPVs are decimal fractions in the CSV files: 0.05 means 5%. The
+terminal prints percentages.
 
 Before uploading:
 

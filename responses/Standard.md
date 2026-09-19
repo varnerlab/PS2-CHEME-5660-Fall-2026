@@ -1,9 +1,23 @@
 # PS2 Standard questions
 
-Complete [src/Standard.jl](../src/Standard.jl), then run
-[check_submission.jl](../check_submission.jl). Use its printed financial
-results to answer the questions, and explain your reasoning in your own
-words. Replace each TODO with your answer, keeping the answer markers.
+Set [TRACK.txt](../TRACK.txt) to `standard`. Complete the four functions in
+[src/Standard.jl](../src/Standard.jl), returning the values specified in their
+docstrings. Save your code, then run this command in a terminal in the PS2 folder:
+
+```text
+julia --project=. --startup-file=no check_submission.jl
+```
+
+**The checker automatically calls your functions and prints the financial
+report after the test results.** You do not need a separate report command.
+Look for **PS2 financial results** in the terminal and use those values to
+answer the questions below. The report includes the observed outcomes returned
+by your `observed_outcome` function. If a calculation shows `UNAVAILABLE`,
+finish or fix the relevant function, save your code, and rerun the command.
+
+Explain your reasoning in your own words. Replace each TODO with your answer,
+keeping the answer markers. Save your answers and rerun the checker before
+submitting.
 
 Report $u$ and $d$ as unitless price factors, prices in USD/share, and
 probabilities and scaled NPVs as percentages. Four decimal places are enough.
@@ -35,8 +49,10 @@ TODO: Add the table and the explanation for parts a–b.
 
 ## 2. Did the trade beat the benchmark in 2026?
 
-Compare the lattice forecasts with the observed 2026 sale prices. All three
-holding periods begin with the same purchase on December 31, 2025.
+Use the financial report's observed outcomes and lattice forecasts for
+21, 63, and 126 trading days. The checker calls your `observed_outcome`
+function for each holding period. All three holding periods begin with
+the same purchase on December 31, 2025.
 
 **a. Compare the forecasts with the observed trades.** Make a table with
 one row for each holding period: 21, 63, and 126 trading days. Use these columns:
@@ -49,7 +65,7 @@ one row for each holding period: 21, 63, and 126 trading days. Use these columns
 - Observed scaled NPV (%).
 - Did the observed trade beat the benchmark? (Yes or no.)
 
-**b. Interpret the observed outcomes.** In one short paragraph, identify
+**b. Interpret the observed outcomes.** In one paragraph, identify
 which holding periods beat the benchmark. For each holding period, state
 whether the observed trade had the more likely outcome under the lattice
 model. To identify that outcome, compare the forecast probability with 50%:
@@ -77,12 +93,12 @@ In L3a, we saw two patterns:
   a normal model predicts.
 - Large changes tended to follow other large changes.
 
-Write one short paragraph that addresses both patterns. Explain why the
-lattice's two fixed daily growth rates limit its ability to represent
-unusually large changes, and why independent daily moves cannot reproduce
-the tendency for large changes to follow one another. How do these limits
-affect your confidence in using the model's probability to decide whether
-to buy? No extra code is needed.
+Write one short paragraph that addresses both patterns. Explain why the two
+fixed daily growth rates implied by the lattice's price factors, $u$ and $d$,
+limit its ability to represent unusually large changes, and why independent
+daily moves cannot reproduce the tendency for large changes to follow one
+another. How do these limits affect your confidence in using the model's
+probability to decide whether to buy? No extra code is needed.
 
 <!-- answer-3:start -->
 TODO: Explain the missing patterns and why they matter for this decision.

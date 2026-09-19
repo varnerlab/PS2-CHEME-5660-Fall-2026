@@ -1,12 +1,23 @@
 # PS2 Advanced questions
 
-Complete [src/Advanced.jl](../src/Advanced.jl) and answer these three questions.
-You do not need to complete the Standard response file.
+Set [TRACK.txt](../TRACK.txt) to `advanced`. Complete the six functions in
+[src/Advanced.jl](../src/Advanced.jl), returning the values specified in their
+docstrings. Save your code, then run this command in a terminal in the PS2 folder:
 
-Run [check_submission.jl](../check_submission.jl) after completing your functions.
-Use its printed financial results to answer the questions, and explain your
-reasoning in your own words. Replace each TODO with your answer, keeping the
-answer markers.
+```text
+julia --project=. --startup-file=no check_submission.jl
+```
+
+**The checker automatically calls your functions and prints the financial
+report after the test results.** You do not need a separate report command.
+Look for **PS2 financial results** in the terminal and use those values to
+answer the questions below. The report includes the observed outcomes returned
+by your `observed_outcome` function. If a calculation shows `UNAVAILABLE`,
+finish or fix the relevant function, save your code, and rerun the command.
+
+Explain your reasoning in your own words. Replace each TODO with your answer,
+keeping the answer markers. Complete only this track's response file. Save
+your answers and rerun the checker before submitting.
 
 Report prices in USD/share and probabilities and scaled NPVs as percentages.
 Report $u$ and $d$ as unitless price factors, $\mu_g$ and $\mu$ as percentages
@@ -15,8 +26,10 @@ year. Four decimal places are enough.
 
 ## 1. What did the models predict, and what happened?
 
-Use the parameters estimated from the 2025 AAPL prices and the observed
-2026 sale prices. Organize your answer into the following three parts.
+Use the financial report's model estimates, forecast probabilities, and
+observed outcomes. The checker calls your functions with the 2025 AAPL prices
+to estimate the models and the 2026 prices to calculate the observed outcomes.
+Organize your answer into the following three parts.
 
 **a. Report the model estimates.** Make a table with columns for the
 parameter name, estimated value, and units. Include all six parameters:
@@ -29,9 +42,9 @@ parameter name, estimated value, and units. Include all six parameters:
 - $\mu$: the price drift in the GBM model.
 
 **b. Compare the forecasts with the observed trades.** First state the
-purchase price and the 63-day sale price needed to match the benchmark.
-Then make a second table with one row for each holding period: 21, 63, and
-126 trading days. Use these columns:
+purchase price and report the sale price needed to match the benchmark for
+the 63-day holding period only. Then make a second table with one row for
+each holding period: 21, 63, and 126 trading days. Use these columns:
 
 - Holding period in trading days.
 - Lattice probability of beating the benchmark (%).
@@ -54,7 +67,7 @@ beating the benchmark, a value below 50% favors not beating it, and a value
 of exactly 50% favors neither outcome.
 
 <!-- answer-1:start -->
-TODO: Add the parameter table, purchase and benchmark prices, comparison table, and explanations for parts a–c.
+TODO: Add the parameter table, purchase price, 63-day benchmark price, comparison table, and explanations for parts a–c.
 <!-- answer-1:end -->
 
 ## 2. Why do the models give different probabilities?
@@ -64,8 +77,8 @@ Use your results from Question 1. Write one short paragraph for each part.
 **a. Explain the difference between the models.** Why can the lattice and
 the GBM model give different probabilities of beating the benchmark even
 though both use the same 2025 prices? Refer to the lattice's two possible
-daily growth rates and the normal distribution of growth rates in the GBM
-model.
+daily growth rates, implied by the price factors $u$ and $d$, and the normal
+distribution of growth rates in the GBM model.
 
 **b. Explain what the observed outcomes tell you.** If the models give similar
 probabilities, does that show that their probabilities are accurate? If a
@@ -98,11 +111,17 @@ inputs in place of the parameters estimated from the AAPL prices:
 | Benchmark rate, $g_y$ | 0.05 per trading year |
 | Holding period | 63 trading days |
 
-**a. Report the three results.** Calculate the mean growth rate using
-$\mu_g=\mu-\sigma^2/2$ and show your substitution. Make a table with columns
-for the quantity, value, and units. Include the mean growth rate, the 63-day
-probability of beating the benchmark, and the 63-day expected scaled NPV.
-Use the checker's separate example for the last two values.
+The rate and volatility inputs above are decimal values. Use them as written
+in your calculations, then report your results in the percentage units
+specified at the top of this file.
+
+**a. Report the three results.** First calculate the mean growth rate by hand
+using $\mu_g=\mu-\sigma^2/2$ and show your substitution. Take the 63-day
+probability of beating the benchmark and the 63-day expected scaled NPV from
+the checker's separate example. That example calls your completed
+[gbm_probability](../src/Advanced.jl) function and the supplied helper for the
+expected scaled NPV. Then make a table with one row for each of these three
+results and columns for the quantity, value, and units.
 
 **b. Explain why the results can occur together.** In one short paragraph,
 explain why the expected scaled NPV can be positive even though the

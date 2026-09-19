@@ -3,11 +3,11 @@ include(joinpath(@__DIR__, "public_standard_tests.jl"));
 """
     advanced_public_checks() -> Vector{NamedTuple}
 
-Define the 15 Standard checks and seven GBM checks for Advanced.
+Define the 20 Standard checks and seven GBM checks for Advanced.
 
 ### Returns
 
-A vector of 22 named tuples, each with a `name` and an `evaluate` function
+A vector of 27 named tuples, each with a `name` and an `evaluate` function
 that returns `true` when the check passes.
 
 ### Notes

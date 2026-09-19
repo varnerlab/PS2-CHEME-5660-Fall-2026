@@ -2,5 +2,6 @@
 /results/
 /MANIFEST.txt
 /dist/
+/solution/
 *.jl.cov
 __pycache__/

@@ -64,7 +64,7 @@ end
     print_finance_report(track::String, root::String) -> Nothing
 
 Run the selected track's functions on the supplied AAPL prices and report
-the estimates, forecast probabilities, and observed 2026 trade outcomes.
+the estimates, forecast probabilities, and trade outcomes calculated by the student.
 
 ### Arguments
 
@@ -83,15 +83,17 @@ example for Question 3.
 
 ### Notes
 
-Model estimates use only `AAPL-2025.csv`. Observed sale prices come from
-`AAPL-2026.csv`. Its first price observation is trading day 1 after the
-December 31, 2025 purchase; observation `days` gives the sale date and price.
+Model estimates use only `AAPL-2025.csv`. Pass `AAPL-2026.csv` to the student's
+`observed_outcome` function. That function selects the sale observation and
+calculates the benchmark price, scaled NPV, and success flag. The report
+displays its returned values without replacing them with supplied calculations.
 
 Printed rates, probabilities, and scaled NPVs are percentages; CSV values
-are decimal fractions. Time is measured in trading years. A failed forecast
-calculation prints `UNAVAILABLE` and leaves an empty CSV field. The observed
-outcome can still be reported. The checker reports file errors and invalid
-input data.
+are decimal fractions. Time is measured in trading years. A failed calculation
+prints `UNAVAILABLE` and leaves its CSV fields empty. Forecasts and observed
+outcomes can be completed independently. The separate Advanced example is
+shown when the student's probability function returns a result. The checker
+reports file errors and invalid input data.
 """
 function print_finance_report(track::String, root::String)::Nothing
     # Read the estimation and comparison prices -
@@ -107,7 +109,7 @@ function print_finance_report(track::String, root::String)::Nothing
     println("\nPS2 financial results");
     println("Price history: ", data.ticker, ", ", first(data.dates), " to ", last(data.dates));
     println("Price observations: ", length(data.prices), "; price changes: ", length(data.prices)-1);
-    println("Use this history to estimate the model parameters. The 2026 prices are used only to check the trade outcomes.");
+    println("Use this history to estimate the model parameters. Your observed_outcome function uses the 2026 prices to calculate the trade outcomes.");
     println("Day 0: ", last(data.dates), "; first trading day after purchase: ", first(observed.dates));
     @printf("Purchase price: %.4f USD/share\nBenchmark: %.2f%% per trading year, continuously compounded\n", initial_price, 100*terms.benchmark);
     println("Each probability is the chance of selling above the benchmark price on the scheduled sale day.");
@@ -127,22 +129,27 @@ function print_finance_report(track::String, root::String)::Nothing
             track == "advanced" ? ",gbm_probability,gbm_expected_scaled_npv" : "",
             ",sale_date,observed_sale_price,observed_scaled_npv,observed_beats_benchmark");
         for days in terms.holding_days
-            threshold = initial_price*exp(terms.benchmark*days*terms.dt);
-            sale_date = observed.dates[days]; # row 1 is the first trading day after purchase
-            sale_price = observed.prices[days];
-            observed_npv = sale_price/initial_price*exp(-terms.benchmark*days*terms.dt) - 1;
-            observed_success = observed_npv > 0; # equality with the benchmark does not count
+            @printf("\n%d trading days\n", days);
+            outcome = try_result("$(days)-day observed outcome", () -> observed_outcome(
+                initial_price, observed, days, terms.benchmark, terms.dt));
+            threshold = outcome === nothing ? nothing : outcome.benchmark_price;
+            sale_date = outcome === nothing ? nothing : outcome.sale_date;
+            sale_price = outcome === nothing ? nothing : outcome.sale_price;
+            observed_npv = outcome === nothing ? nothing : outcome.scaled_npv;
+            observed_success = outcome === nothing ? nothing : outcome.beats_benchmark;
             model = lattice === nothing ? nothing : try_result("$(days)-day lattice", () -> build_lattice(lattice, initial_price, days));
             probability = model === nothing ? nothing : try_result("$(days)-day lattice probability", () -> lattice_probability(model, days, terms.benchmark, terms.dt));
             mass = model === nothing ? nothing : sum(model.data[i].probability for i in model.levels[days]);
             normal_probability = gbm === nothing ? nothing : try_result("$(days)-day GBM probability", () -> gbm_probability(gbm, days, terms.benchmark, terms.dt));
             expected = gbm === nothing ? nothing : gbm_expected_npv(gbm, days, terms.benchmark, terms.dt);
-            @printf("\n%d trading days: sale price to match the benchmark = %.4f USD/share\n", days, threshold);
+            threshold === nothing || @printf("  Sale price to match the benchmark = %.4f USD/share\n", threshold);
             probability === nothing || @printf("  Lattice probability of beating the benchmark = %.4f%%\n", 100*probability);
             normal_probability === nothing || @printf("  GBM probability of beating the benchmark = %.4f%%\n", 100*normal_probability);
             expected === nothing || @printf("  GBM expected scaled NPV = %.4f%%\n", 100*expected);
-            @printf("  Observed sale on %s: %.4f USD/share\n", string(sale_date), sale_price);
-            @printf("  Observed scaled NPV = %.4f%%; beat the benchmark: %s\n", 100*observed_npv, observed_success ? "yes" : "no");
+            if outcome !== nothing
+                @printf("  Observed sale on %s: %.4f USD/share\n", string(sale_date), sale_price);
+                @printf("  Observed scaled NPV = %.4f%%; beat the benchmark: %s\n", 100*observed_npv, observed_success ? "yes" : "no");
+            end
             mass === nothing || @printf("  Check: sale-day probabilities sum to %.10f (should be 1, allowing for rounding).\n", mass);
             values = Any[days, threshold, probability, mass];
             track == "advanced" && append!(values, [normal_probability, expected]);
@@ -154,17 +161,19 @@ function print_finance_report(track::String, root::String)::Nothing
         end
     end
     println("\nThe three holding periods start with the same purchase and share the same price history.");
-    println("These outcomes show what happened to this trade. More forecasts and their observed outcomes are needed to judge how accurate the probabilities are.");
+    println("A single price history is not enough to judge how accurate the forecast probabilities are.");
     # Report the separate example for Advanced Question 3 -
     if track == "advanced"
         example = terms.illustration;
-        probability = try_result("Advanced Question 3 probability", () -> gbm_probability(example, terms.primary_days, terms.benchmark, terms.dt));
-        expected = gbm_expected_npv(example, terms.primary_days, terms.benchmark, terms.dt);
         println("\nAdvanced Question 3: separate example with assumed parameters");
-        @printf("Holding period: %d trading days; benchmark: %.2f%% per trading year\n", terms.primary_days, 100*terms.benchmark);
-        @printf("Mean growth rate = %.2f%%/year; volatility = %.2f%%/sqrt(year); price drift = %.2f%%/year\n", 100*example.mu_g, 100*example.sigma, 100*example.mu);
-        probability === nothing || @printf("Probability of beating the benchmark = %.4f%%\n", 100*probability);
-        @printf("Expected scaled NPV = %.4f%%\n", 100*expected);
+        probability = try_result("Advanced Question 3 probability", () -> gbm_probability(example, terms.primary_days, terms.benchmark, terms.dt));
+        if probability !== nothing
+            expected = gbm_expected_npv(example, terms.primary_days, terms.benchmark, terms.dt);
+            @printf("Holding period: %d trading days; benchmark: %.2f%% per trading year\n", terms.primary_days, 100*terms.benchmark);
+            @printf("Mean growth rate = %.2f%%/year; volatility = %.2f%%/sqrt(year); price drift = %.2f%%/year\n", 100*example.mu_g, 100*example.sigma, 100*example.mu);
+            @printf("Probability of beating the benchmark = %.4f%%\n", 100*probability);
+            @printf("Expected scaled NPV = %.4f%%\n", 100*expected);
+        end
     end
     println("\nSaved results/$(track)-results.csv.");
     isfile(joinpath(output, "terminal-nodes.csv")) && println("Saved results/terminal-nodes.csv with the 63-day sale prices and probabilities.");

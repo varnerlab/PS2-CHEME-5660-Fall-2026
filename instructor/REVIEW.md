@@ -106,9 +106,8 @@ The data notes record the source and its SHA-256 value.
 
 Model estimation still uses only the 250 prices from 2025. The assumed
 purchase is at the final 2025 price. Observation 1 in the 2026 file is the
-first trading day after purchase. The sale dates are February 2, April 2,
-and July 6, 2026. The observed scaled NPVs are -2.5063%, -7.6279%, and
-11.7809%; only the 126-day trade beats the benchmark.
+first trading day after purchase. The observed sale dates and scaled NPVs
+are recorded in the local [answer guide](../solution/RESPONSE-GUIDE.md).
 
 The response questions distinguish whether the more likely outcome occurred
 from whether a probability forecast is accurate. They also explain that the
@@ -191,3 +190,46 @@ preserved. Both files render to HTML, local links resolve, and the response
 checker detects all three placeholders and accepts filled answer blocks.
 The numerical code was not changed or rerun for this question-only revision.
 The local student ZIP was refreshed with the revised questions.
+
+## Student calculations for observed outcomes — September 19, 2026
+
+The instructor requested that students calculate the observed outcomes in
+their own code. Both tracks now require `observed_outcome`, which selects
+the sale observation and returns its date and price, the benchmark price,
+the scaled NPV, and whether the trade beat the benchmark. The report displays
+those values. An unfinished function produces `UNAVAILABLE` in the terminal
+and empty outcome fields in the CSV, including when the forecast functions
+are complete. The separate Advanced example also remains unavailable until
+the student's probability function returns a result.
+
+Standard now has four required functions and 20 public checks. Advanced has
+six functions and 27 checks. The five new checks cover observation indexing,
+time units and benchmark growth, positive and negative scaled NPV, and
+equality with the benchmark. The rubric thresholds, questions, README, data
+notes, Canvas copy, build checks, and ignored local solutions were updated.
+These totals replace the earlier counts recorded in this review history.
+
+All 14 release cases pass. The completed solutions pass 20/20 and 27/27,
+and the independent Python calculations agree with their reported results.
+Both tracks were checked with only the observed-outcome function complete
+and with only that function unfinished. A separate check confirms that the
+report uses student-returned values without silently recomputing them. All
+166 feedback and grading checks pass. The local student ZIP excludes the
+ignored solutions, answer guide, and saved logs.
+
+## Checker and report workflow — September 19, 2026
+
+The README now puts running the checker before writing the answers. Both
+response files, the source-file comments, data notes, and Canvas copy explain
+that `check_submission.jl` automatically calls the student's functions and
+prints the financial report. The instructions give the exact command, name
+the terminal section `PS2 financial results`, and tell students to save and
+rerun after changing code or answers. No separate report call is required.
+
+Checked this sequence against the checker implementation and saved starter
+output. Markdown parsing and HTML generation preserve the seven setup steps,
+question headings, answer markers, tables, and mathematics; local links and
+GitHub heading anchors resolve. Canvas HTML retains balanced tags, link
+targets, and command formatting. Only comments changed in Julia source;
+the calculations were not changed or rerun. The rebuilt local student ZIP
+matches all 20 saved source files and excludes solutions, answers, and logs.

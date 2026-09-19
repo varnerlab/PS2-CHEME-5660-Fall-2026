@@ -22,7 +22,7 @@ def build_release() -> Path:
     stop the build with an exception. Replace an existing ZIP with the same name.
     """
     assert (ROOT / "TRACK.txt").read_text().strip() == "standard"
-    for track, functions in (("Standard", 3), ("Advanced", 5)):
+    for track, functions in (("Standard", 4), ("Advanced", 6)):
         source = (ROOT / f"src/{track}.jl").read_text()
         assert source.count('error("Complete ') == functions, track
         assert (ROOT / f"responses/{track}.md").read_text().count("TODO:") == 3
@@ -33,7 +33,11 @@ def build_release() -> Path:
             archive.write(ROOT / name, f"PS2-CHEME-5660-Fall-2026/{name}")
     with ZipFile(destination) as archive:
         assert len(archive.namelist()) == len(RELEASE_FILES)
-        assert not any("/instructor/" in name for name in archive.namelist())
+        assert not any(
+            directory in Path(name).parts
+            for name in archive.namelist()
+            for directory in ("instructor", "solution")
+        )
         assert archive.testzip() is None
     return destination
 

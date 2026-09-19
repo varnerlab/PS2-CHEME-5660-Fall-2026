@@ -4,12 +4,12 @@ Suppose you buy [Apple (AAPL) shares](https://finance.yahoo.com/quote/AAPL)
 and sell them after 63 trading days. What is the probability of beating a
 benchmark that grows at 5% per trading year, compounded continuously?
 
-Estimate the models from **2025 prices**, then compare their forecasts with
-**what happened in 2026**. Choose one track:
+Estimate the model parameters from **2025 prices**, then compare the forecasts
+with **what happened in 2026**. Choose one track:
 
 - **Standard:** Build a binomial lattice, which allows two possible price
   changes each day, and calculate the probability of beating the benchmark.
-- **Advanced:** Complete Standard and repeat the calculation with geometric
+- **Advanced:** Complete the lattice calculation and repeat it with geometric
   Brownian motion (GBM). Compare the models' probabilities. Also examine a
   case where expected net present value (NPV) is positive, but the probability
   of beating the benchmark is below 50%.
@@ -23,7 +23,8 @@ version, course package, and submission process as PS1.
 - **Due:** Sunday, October 4, 2026 at 11:59 PM ET. Upload your ZIP to Canvas.
 - **Revisions:** Until December 19, 2026 at 11:59 PM ET after a qualifying
   initial submission. We keep your highest score, including across tracks.
-- **Score:** Out of 4. An accepted Advanced 4 earns one Magic Point, once for PS2.
+- **Score:** Out of 4. An accepted Advanced score of 4 earns one Magic Point,
+  once for PS2.
 
 Submit a readable ZIP with attempted work by the initial deadline, even if
 checks fail. A missing, empty, or unreadable submission receives a **Frozen
@@ -70,7 +71,7 @@ market data.
    ```
 
 Keep the supplied function names, arguments, return types, and docstrings.
-Replace starter errors with your code and remove completed TODOs. Document
+Replace the starter errors with your code and remove completed TODOs. Document
 each helper's purpose, inputs, and output. Keep the supplied lines in
 [Include.jl](Include.jl) when adding helper files. Leave the other support
 code, data, reports, tests, and checker unchanged.
@@ -81,7 +82,7 @@ The two price files have different roles:
 
 | File | Dates | Use |
 |:--|:--|:--|
-| [AAPL-2025.csv](data/AAPL-2025.csv) | January 2–December 31, 2025 | Estimate the models from all 250 prices. |
+| [AAPL-2025.csv](data/AAPL-2025.csv) | January 2–December 31, 2025 | Estimate the model parameters from all 250 prices. |
 | [AAPL-2026.csv](data/AAPL-2026.csv) | January 2–September 4, 2026 | Read the observed sale prices. |
 
 Each price is a daily average weighted by the shares in each trade. The
@@ -106,9 +107,9 @@ values. Use the [lecture examples](#lecture-examples) for the formulas.
 | [build_lattice](src/Standard.jl) | Use the package to build prices and probabilities from the purchase day through the sale day. |
 | [lattice_probability](src/Standard.jl) | Calculate the probability of beating the benchmark on the sale day. |
 
-Advanced uses the copies in [src/Advanced.jl](src/Advanced.jl). The checker
-runs all three holding periods and checks that node probabilities sum to one,
-allowing small rounding differences.
+For the Advanced track, use the copies in [src/Advanced.jl](src/Advanced.jl).
+The checker runs all three holding periods and checks that node probabilities
+sum to one, allowing small rounding differences.
 
 ## Advanced: repeat with GBM
 
@@ -118,10 +119,10 @@ Complete the three lattice functions and these two functions in
 
 | Function | Task |
 |:--|:--|
-| [estimate_gbm](src/Advanced.jl) | Estimate mean growth, volatility, and price drift from the daily growth rates. |
+| [estimate_gbm](src/Advanced.jl) | Estimate the mean growth rate, volatility parameter, and price drift from the daily growth rates. |
 | [gbm_probability](src/Advanced.jl) | Calculate the probability of beating the benchmark using the normal distribution. |
 
-The report also computes expected scaled NPV. In
+The report also computes the expected scaled NPV. In
 [Advanced Question 3](responses/Advanced.md#3-can-expected-npv-be-positive-with-less-than-a-50-chance-of-success),
 explain how this value can be positive when the probability of beating the
 benchmark is below 50%.
@@ -151,9 +152,9 @@ The checker saves these files when the calculations can run:
 | `results/advanced-results.csv` | Both forecasts, expected scaled NPV, and observed outcomes |
 | `results/terminal-nodes.csv` | Each 63-day lattice sale price, probability, and scaled NPV |
 
-Each run replaces the generated results. Empty fields mean a calculation
-was unavailable. In the CSV files, 0.05 means 5% for probabilities and scaled
-NPVs. The terminal prints percentages.
+Each run replaces the generated results. An empty field means that a
+calculation was unavailable. In the CSV files, 0.05 means 5% for probabilities
+and scaled NPVs. The terminal prints percentages.
 
 Before uploading:
 
@@ -167,5 +168,5 @@ Before uploading:
 
 Submit attempted work by the initial deadline even if checks fail. For an
 eligible revision, use **New Attempt** on the same Canvas assignment.
-Passing every test still requires teaching-team review of your code,
-documentation, and answers before a score of 4.
+After you pass every test, the teaching team must review your code,
+documentation, and answers before awarding a score of 4.

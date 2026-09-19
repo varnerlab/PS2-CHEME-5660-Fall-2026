@@ -33,14 +33,14 @@ the benchmark.
 - `model`: Lattice containing the purchase price and sale-day nodes.
 - `days`: Number of trading days from purchase to sale.
 - `benchmark`: Continuously compounded benchmark rate per trading year.
-- `dt`: Time per trading day in trading years.
+- `dt`: Length of one trading day, measured in trading years.
 - `path`: CSV file to write. Replaces the file if it already exists.
 
 ### Returns
 
 `nothing`. Writes prices in USD/share and probabilities and scaled NPVs as
-decimal fractions. The `positive_npv` column is `true` only when scaled NPV
-is strictly above zero.
+decimal fractions. The `positive_npv` column is `true` only when the scaled
+NPV is strictly above zero.
 
 ### Errors
 
@@ -78,8 +78,8 @@ for 21, 63, and 126 trading days. For each holding period, also reports the
 observed sale date, price, scaled NPV, and whether the trade beat the benchmark.
 Writes `results/<track>-results.csv` and, when available,
 `results/terminal-nodes.csv` for the 63-day lattice.
-Advanced also reports expected scaled NPV and the separate example for
-Question 3.
+The Advanced report also includes the expected scaled NPV and the separate
+example for Question 3.
 
 ### Notes
 
@@ -88,9 +88,10 @@ Model estimates use only `AAPL-2025.csv`. Observed sale prices come from
 December 31, 2025 purchase; observation `days` gives the sale date and price.
 
 Printed rates, probabilities, and scaled NPVs are percentages; CSV values
-are decimal fractions. Time uses a trading year. A failed forecast calculation
-prints `UNAVAILABLE` and leaves an empty CSV field. The observed outcome can
-still be reported. The checker reports file errors and invalid input data.
+are decimal fractions. Time is measured in trading years. A failed forecast
+calculation prints `UNAVAILABLE` and leaves an empty CSV field. The observed
+outcome can still be reported. The checker reports file errors and invalid
+input data.
 """
 function print_finance_report(track::String, root::String)::Nothing
     # Read the estimation and comparison prices -
@@ -106,9 +107,9 @@ function print_finance_report(track::String, root::String)::Nothing
     println("\nPS2 financial results");
     println("Price history: ", data.ticker, ", ", first(data.dates), " to ", last(data.dates));
     println("Price observations: ", length(data.prices), "; price changes: ", length(data.prices)-1);
-    println("Use this history to estimate the models. The 2026 prices are used only to check the trade outcomes.");
+    println("Use this history to estimate the model parameters. The 2026 prices are used only to check the trade outcomes.");
     println("Day 0: ", last(data.dates), "; first trading day after purchase: ", first(observed.dates));
-    @printf("Purchase price: %.4f USD/share\nBenchmark: %.2f%% per year, continuously compounded\n", initial_price, 100*terms.benchmark);
+    @printf("Purchase price: %.4f USD/share\nBenchmark: %.2f%% per trading year, continuously compounded\n", initial_price, 100*terms.benchmark);
     println("Each probability is the chance of selling above the benchmark price on the scheduled sale day.");
     # Estimate the models using only 2025 prices -
     lattice = try_result("Lattice estimates", () -> estimate_lattice(data.prices, terms.dt));
@@ -117,7 +118,7 @@ function print_finance_report(track::String, root::String)::Nothing
     end
     gbm = track == "advanced" ? try_result("GBM estimates", () -> estimate_gbm(data.prices, terms.dt)) : nothing;
     if gbm !== nothing
-        @printf("GBM: mean growth = %.4f%%/year, volatility = %.4f%%/sqrt(year), drift = %.4f%%/year\n",
+        @printf("GBM: mean growth rate = %.4f%%/year, volatility = %.4f%%/sqrt(year), price drift = %.4f%%/year\n",
             100*gbm.mu_g, 100*gbm.sigma, 100*gbm.mu);
     end
     # Compare each forecast with the observed sale price -
@@ -136,13 +137,13 @@ function print_finance_report(track::String, root::String)::Nothing
             mass = model === nothing ? nothing : sum(model.data[i].probability for i in model.levels[days]);
             normal_probability = gbm === nothing ? nothing : try_result("$(days)-day GBM probability", () -> gbm_probability(gbm, days, terms.benchmark, terms.dt));
             expected = gbm === nothing ? nothing : gbm_expected_npv(gbm, days, terms.benchmark, terms.dt);
-            @printf("\n%d trading days: sale price to match benchmark = %.4f USD/share\n", days, threshold);
-            probability === nothing || @printf("  Lattice probability of beating benchmark = %.4f%%\n", 100*probability);
-            normal_probability === nothing || @printf("  GBM probability of beating benchmark = %.4f%%\n", 100*normal_probability);
+            @printf("\n%d trading days: sale price to match the benchmark = %.4f USD/share\n", days, threshold);
+            probability === nothing || @printf("  Lattice probability of beating the benchmark = %.4f%%\n", 100*probability);
+            normal_probability === nothing || @printf("  GBM probability of beating the benchmark = %.4f%%\n", 100*normal_probability);
             expected === nothing || @printf("  GBM expected scaled NPV = %.4f%%\n", 100*expected);
             @printf("  Observed sale on %s: %.4f USD/share\n", string(sale_date), sale_price);
-            @printf("  Observed scaled NPV = %.4f%%; beat benchmark: %s\n", 100*observed_npv, observed_success ? "yes" : "no");
-            mass === nothing || @printf("  Check: sale-day probabilities sum to %.10f (should be 1, within rounding).\n", mass);
+            @printf("  Observed scaled NPV = %.4f%%; beat the benchmark: %s\n", 100*observed_npv, observed_success ? "yes" : "no");
+            mass === nothing || @printf("  Check: sale-day probabilities sum to %.10f (should be 1, allowing for rounding).\n", mass);
             values = Any[days, threshold, probability, mass];
             track == "advanced" && append!(values, [normal_probability, expected]);
             append!(values, [sale_date, sale_price, observed_npv, observed_success]);
@@ -152,17 +153,17 @@ function print_finance_report(track::String, root::String)::Nothing
             end
         end
     end
-    println("\nThe three sale dates share one purchase and one price history.");
-    println("They show what happened to this trade. More forecasts are needed to judge probability accuracy.");
+    println("\nThe three holding periods start with the same purchase and share the same price history.");
+    println("These outcomes show what happened to this trade. More forecasts and their observed outcomes are needed to judge how accurate the probabilities are.");
     # Report the separate example for Advanced Question 3 -
     if track == "advanced"
         example = terms.illustration;
         probability = try_result("Advanced Question 3 probability", () -> gbm_probability(example, terms.primary_days, terms.benchmark, terms.dt));
         expected = gbm_expected_npv(example, terms.primary_days, terms.benchmark, terms.dt);
         println("\nAdvanced Question 3: separate example with assumed parameters");
-        @printf("Holding period: %d trading days; benchmark: %.2f%% per year\n", terms.primary_days, 100*terms.benchmark);
-        @printf("Mean growth = %.2f%%/year; volatility = %.2f%%/sqrt(year); drift = %.2f%%/year\n", 100*example.mu_g, 100*example.sigma, 100*example.mu);
-        probability === nothing || @printf("Probability of beating benchmark = %.4f%%\n", 100*probability);
+        @printf("Holding period: %d trading days; benchmark: %.2f%% per trading year\n", terms.primary_days, 100*terms.benchmark);
+        @printf("Mean growth rate = %.2f%%/year; volatility = %.2f%%/sqrt(year); price drift = %.2f%%/year\n", 100*example.mu_g, 100*example.sigma, 100*example.mu);
+        probability === nothing || @printf("Probability of beating the benchmark = %.4f%%\n", 100*probability);
         @printf("Expected scaled NPV = %.4f%%\n", 100*expected);
     end
     println("\nSaved results/$(track)-results.csv.");

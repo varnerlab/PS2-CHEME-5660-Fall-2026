@@ -209,8 +209,9 @@ Calculate the rubric score from the check results and completion review.
 
 ### Returns
 
-An integer from 0 to 4. No passing checks gives 0. Passing some checks but
-at most half gives 1; passing more than half but fewer than all gives 2.
+An integer from 0 to 4. A submission with no passing checks receives 0.
+Passing at least one check but no more than half gives 1; passing more than
+half but fewer than all gives 2.
 When all checks pass, return 3 if `completion` is `false` and 4 if it is `true`.
 
 ### Notes

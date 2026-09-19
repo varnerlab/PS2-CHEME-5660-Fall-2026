@@ -49,7 +49,7 @@ function standard_public_checks()::Vector{NamedTuple}
         (name="Each day's probabilities sum to one", evaluate=() -> begin
             m = tree(); all(isapprox(sum(m.data[i].probability for i in m.levels[j]), 1.0; atol=1e-8) for j in 0:3);
         end),
-        (name="Add all sale-day outcomes with positive scaled NPV", evaluate=() -> isapprox(probability(0.05, 0.5), 0.84; atol=1e-10)),
+        (name="Add the probabilities of all sale-day outcomes with positive scaled NPV", evaluate=() -> isapprox(probability(0.05, 0.5), 0.84; atol=1e-10)),
         (name="Exclude outcomes exactly equal to the benchmark", evaluate=() -> begin
             m = populate(build(MyBinomialEquityPriceTree, (u=1.25, d=0.8, p=0.6)); Sₒ=100.0, h=2);
             isapprox(lattice_probability(m, 2, 0.0, 1/252), 0.36; atol=1e-10);

@@ -6,8 +6,8 @@ Read the supplied price file without changing its values.
 ### Arguments
 
 - `path`: Price file with the exact header `date,ticker,price`. Dates use
-  `YYYY-MM-DD` and must increase without repeats. The file must contain
-  one ticker and at least three prices.
+  `YYYY-MM-DD` and must be in chronological order without repeats. The file
+  must contain one ticker and at least three prices.
 
 ### Returns
 
@@ -54,10 +54,10 @@ A named tuple with these entries:
 - `benchmark`: Continuously compounded rate, `0.05` per trading year.
 - `primary_days`: Main holding period, 63 trading days.
 - `holding_days`: The three holding periods, `[21, 63, 126]` trading days.
-- `illustration`: Assumed GBM values for Advanced Question 3. Mean growth
-  `mu_g` and price drift `mu` are in 1/year; volatility `sigma` is in
-  1/sqrt(year). Here, year means a trading year. These values are separate
-  from the AAPL estimates.
+- `illustration`: Assumed GBM parameters for Advanced Question 3. The mean
+  growth rate `mu_g` and price drift `mu` are measured in 1/year; the volatility
+  parameter `sigma` is measured in 1/sqrt(year). Here, a year means a trading
+  year. These values are separate from the AAPL estimates.
 """
 function assignment_terms()::NamedTuple
     return (dt=1/252, benchmark=0.05, primary_days=63,
@@ -69,20 +69,20 @@ end
     gbm_expected_npv(parameters::NamedTuple, days::Int,
         benchmark::Float64, dt::Float64) -> Float64
 
-Calculate expected scaled NPV under the GBM model.
+Calculate the expected scaled NPV under the GBM model.
 
 ### Arguments
 
-- `parameters`: A named tuple with price drift `mu` per trading year.
+- `parameters`: A named tuple with the price drift `mu`, measured per trading year.
 - `days`: Number of trading days from purchase to sale.
 - `benchmark`: Continuously compounded benchmark rate per trading year.
-- `dt`: Time per trading day in trading years.
+- `dt`: Length of one trading day, measured in trading years.
 
 ### Returns
 
 The unitless value `exp((mu - benchmark) * days * dt) - 1`.
-A value of `0.01` means expected discounted sale proceeds exceed the purchase
-cost by 1%.
+A value of `0.01` means that the expected discounted sale proceeds exceed
+the purchase cost by 1%.
 """
 function gbm_expected_npv(parameters::NamedTuple, days::Int,
     benchmark::Float64, dt::Float64)::Float64

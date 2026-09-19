@@ -139,3 +139,55 @@ price files are unchanged. The revised references pass 15/15 Standard and
 22/22 Advanced checks; independent Python calculations still agree with the
 forecasts and observed outcomes. The student ZIP was rebuilt and checked
 against all 20 release files.
+
+## Natural-language pass — September 19, 2026
+
+Reviewed all 15 student-facing prose and Julia files, including the Canvas
+assignment description. Applied localized wording changes in 14 files and
+synchronized the two reference solutions' docstrings with the student
+templates. The pass follows the Week 5 natural-language handoff: restore
+missing articles and verbs, name quantities clearly, and retain concise
+headings, labels, and comments.
+
+Examples include “Complete the lattice calculation” instead of “Complete
+Standard,” “the mean growth rate, volatility parameter, and price drift”
+instead of “mean growth, volatility, and price drift,” and “before awarding
+a score of 4” instead of “before a score of 4.” The model-comparison question
+now names the normal distribution of growth rates and the observed trades
+that did not beat the benchmark.
+
+The calculations, formulas, supplied prices, package versions, grading rules,
+dates, headings, links, and answer markers are preserved. Julia differences
+are confined to docstrings, comments, and student-visible message and test
+labels. The five Markdown documents render to HTML; their mathematical
+expressions, code fragments, lists, and numeric values match the baseline.
+The Canvas HTML retains its tags, styles, and link targets. A visual browser
+check was unavailable because this session had no connected browser.
+
+All nine release cases pass, including 15/15 for the Standard reference and
+22/22 for the Advanced reference. Independent Python calculations agree with
+the forecasts, observed outcomes, and exported lattice. The separate feedback
+suite passes all 136 checks. The student ZIP was rebuilt and its 20 files
+checked against the saved sources. Historical test logs were preserved by
+running the release suite in a temporary copy. No commit, push, or Canvas
+publication was performed.
+
+## Response-question clarity — September 19, 2026
+
+Revised both response files after the instructor found Advanced Question 1
+confusing. Questions now separate tables of results from interpretation and
+state the required quantities, table columns, units, and answer parts.
+Advanced Question 1 names all six parameters and makes clear that each row
+compares two model probabilities with one observed trade. Both tracks explain
+how to identify the more likely outcome using the 50% threshold. Advanced
+Question 2 separates model differences, forecast accuracy, and missing data
+patterns into three short paragraphs. Advanced Question 3 identifies the
+separate report example and separates its calculation, interpretation, and
+decision questions.
+
+Checked all six questions against the report code and instructor answer
+guide. The three question headings and answer blocks in each file are
+preserved. Both files render to HTML, local links resolve, and the response
+checker detects all three placeholders and accepts filled answer blocks.
+The numerical code was not changed or rerun for this question-only revision.
+The local student ZIP was refreshed with the revised questions.

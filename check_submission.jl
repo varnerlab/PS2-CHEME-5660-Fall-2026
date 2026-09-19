@@ -116,8 +116,8 @@ Uses `_CHECK_SETUP` for the selected track and its checks. Uses
 ### Returns
 
 `nothing`. Prints results and next steps, and writes `MANIFEST.txt` in the
-assignment folder. Passing every check still requires teaching-team
-review of the code, documentation, and answers.
+assignment folder. After all checks pass, the teaching team must still
+review the code, documentation, and answers.
 
 ### Notes
 
@@ -193,7 +193,7 @@ function main()::Nothing
     println("Local rubric feedback: ", feedback);
     all_passed && println("The teaching team must still review your code, documentation, and answers.");
     println("Wrote MANIFEST.txt. This script has not uploaded your work.");
-    println("\nSave your files, ZIP the whole PS2 folder, and upload it to the PS2 assignment on Canvas.");
+    println("\nSave your files, create a ZIP of the whole PS2 folder, and upload it to the PS2 assignment on Canvas.");
     println("Name the ZIP CHEME-5660-PS2-<your netid>.zip, using your own NetID.");
     println("Submit attempted work by the initial deadline even if checks fail or cannot run.");
     println("For eligible revisions, use New Attempt on the same Canvas assignment.");

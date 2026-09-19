@@ -1,11 +1,13 @@
 # PS2 grading rules
 
-Your selected track is graded out of **4**. An accepted Advanced 4 also earns
-**one Magic Point**, once for PS2. Select your track in [TRACK.txt](TRACK.txt).
+Your selected track is graded out of **4**. An accepted Advanced score of 4
+also earns **one Magic Point**, once for PS2. Select your track in
+[TRACK.txt](TRACK.txt).
 
-Standard has **15 checks**: four for estimates, five for lattice construction,
-five for probability, and one using all three functions with the supplied
-data. Advanced adds seven GBM checks, for **22 total**.
+The Standard track has **15 checks**: four for parameter estimates, five for
+lattice construction, five for the probability calculation, and one that
+uses all three functions with the supplied data. The Advanced track adds
+seven GBM checks, for **22 total**.
 
 Checks run separately. A check that cannot run counts as failed. Several use
 supplied inputs, so an unfinished early function does not block all later
@@ -19,16 +21,17 @@ credit. A source file that cannot load receives 0.
 | 3 | 15 | 22 | At least one requirement below is not met |
 | 4 | 15 | 22 | All requirements below are met |
 
-Passing only the 15 shared checks on Advanced earns 2. We grade the selected
-track. To change tracks, update [TRACK.txt](TRACK.txt), complete that track's
-files, and rerun the checker.
+Passing only the 15 shared checks on the Advanced track earns 2. We grade
+the selected track. To change tracks, update [TRACK.txt](TRACK.txt), complete
+that track's files, and rerun the checker.
 
 ## Requirements for a 4
 
 - **Code:** Complete every required function. Use the course package for
   growth rates, lattice estimates, and construction. Add the probabilities
   of sale-day nodes with positive scaled NPV. Advanced also uses the stated
-  GBM estimates and normal probability formula. Estimate from 2025 prices only.
+  GBM estimates and normal probability formula. Estimate the model parameters
+  from 2025 prices only.
 - **Documentation:** Keep the supplied docstrings. Document each helper's
   purpose, inputs, and output. Use short comments for non-obvious steps.
 - **Helper files:** Put helpers in separate `.jl` files under [src](src).
@@ -62,7 +65,7 @@ After a qualifying initial submission, you may revise until
 **December 19, 2026 at 11:59 PM ET**, with no limit on attempts. Use **New
 Attempt** on the same Canvas assignment. Eligible revisions have no late
 penalty. We keep your highest score, even if you change tracks. An accepted
-Advanced 4 earned through revision also earns the one-time Magic Point.
+Advanced score of 4 earned through revision also earns the one-time Magic Point.
 
 ## Independent work
 

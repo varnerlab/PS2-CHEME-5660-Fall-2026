@@ -18,17 +18,19 @@ Rows are ordered by date. Both files have these columns:
 The price is a volume-weighted average: each trade contributes in proportion
 to its share count. The two files use the same definition.
 
-Use the 250 prices from 2025 to estimate the models from 249 daily changes.
-Keep the estimates fixed when checking 2026. The December 31, 2025 price is
-the assumed purchase price at day 0.
+Use the 250 prices from 2025 to estimate the model parameters from 249 daily
+changes. Keep the estimates fixed when checking the 2026 outcomes. The
+December 31, 2025 price is the assumed purchase price at day 0.
 
-The first 2026 price observation, January 2, is day 1. Read observations 21,
-63, and 126 for the three sale prices. The header is not an observation.
-The report calculates scaled NPV and checks whether each sale beat the benchmark.
+The first 2026 price observation, on January 2, is day 1. Use observations 21,
+63, and 126 as the three sale prices. The header is not an observation.
+The report calculates the scaled NPV and checks whether each sale beat the
+benchmark.
 
-[assignment_terms](../src/Support.jl) supplies the time step of 1/252 year
-and the 5% continuously compounded annual benchmark. Advanced Question 3
-uses separate assumed inputs, not the observed 2026 outcomes.
+The [assignment_terms](../src/Support.jl) function supplies the time step of
+1/252 trading year and the benchmark rate of 5% per trading year, compounded
+continuously. Advanced Question 3 uses separate assumed inputs, not the
+observed 2026 outcomes.
 
 ## Data sources
 

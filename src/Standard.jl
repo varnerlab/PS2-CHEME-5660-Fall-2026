@@ -46,7 +46,7 @@ end
     build_lattice(parameters::NamedTuple, initial_price::Float64, days::Int)
         -> MyBinomialEquityPriceTree
 
-Build a lattice of prices and probabilities from purchase day to sale day.
+Build a lattice of prices and probabilities from the purchase day through the sale day.
 
 ### Arguments
 
@@ -71,7 +71,7 @@ Read node numbers from `model.levels[day]` and each node's values from
 """
 function build_lattice(parameters::NamedTuple, initial_price::Float64,
     days::Int)::MyBinomialEquityPriceTree
-    # TODO 4: Create model with build(MyBinomialEquityPriceTree, parameters).
+    # TODO 4: Create the model with build(MyBinomialEquityPriceTree, parameters).
     # TODO 5: Use populate to add prices and probabilities through the sale day.
     # Set Sₒ=initial_price and h=days, then return the completed model.
     error("Complete build_lattice in your selected source file.");
@@ -88,13 +88,13 @@ Calculate the probability of beating the benchmark on the scheduled sale day.
 - `model`: A lattice containing the prices and probabilities through day `days`.
 - `days`: Positive whole number of trading days from purchase to sale.
 - `benchmark`: Continuously compounded rate; `0.05` means 5% per trading year.
-- `dt`: Time per trading day in trading years.
+- `dt`: Length of one trading day, measured in trading years.
 
 ### Returns
 
 The sum of the probabilities of sale-day nodes with scaled NPV strictly
-above zero. Return `0.0` if no sale-day price beats the benchmark. Equality
-does not count.
+above zero. Return `0.0` if no sale-day price beats the benchmark. A price
+that exactly matches the benchmark does not count as success.
 
 ### Method
 

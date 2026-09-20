@@ -6,15 +6,16 @@ Reviewed September 18, 2026.
 
 - Release: September 20, 2026.
 - Initial deadline: October 4, 2026 at 11:59 PM ET.
-- Standard: three functions for lattice estimates, construction, and the
-  probability of positive scaled NPV.
+- Standard: four functions for lattice estimates, construction, the
+  probability of positive scaled NPV, and the observed 2026 trade outcome.
 - Advanced: the same work plus two GBM functions and a comparison of average
   NPV with the probability of positive NPV.
 - Both tracks: the same 250 AAPL prices from 2025, a 5% continuous annual
   benchmark, and holding periods of 21, 63, and 126 trading days. Compare
   those forecasts with observed sale prices from the 2026 file.
-- Grading and revision rules: the PS1 structure, with 15 Standard checks and
-  22 Advanced checks.
+- Grading and revision rules: the PS1 structure, with 20 Standard checks and
+  27 Advanced checks. The sections below are a chronological log; counts of
+  15 and 22 in earlier sections predate the observed-outcome checks.
 
 ## Prose and documentation review
 
@@ -364,3 +365,12 @@ adjustment, invalid-track, missing-solution, and syntax-error runs pass with
 complete words and source pointers preserved. The README documents the new
 layout; its local links and the instructor README render correctly. The
 rebuilt student ZIP includes the shared formatter and matches the saved files.
+
+## Report no longer states the Question 2b conclusion — September 20, 2026
+
+Removed one sentence from the terminal report that said the three trades
+share one purchase and cannot establish forecast accuracy. Question 2b asks
+students to explain that point, so the report was supplying the answer.
+The checker was rerun on the untouched Standard starter; the observed-trades
+table, probability-sum note, and benchmark comparison print as before.
+No calculation, test, data, or grading rule changed.

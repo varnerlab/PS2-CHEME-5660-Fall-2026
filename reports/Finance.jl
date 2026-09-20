@@ -312,7 +312,6 @@ function print_finance_report(track::String, root::String;
     print_terminal_table(headers, display_rows; right_columns=collect(2:length(headers)));
     println();
     print_terminal_text("The sale-day probabilities should sum to 1, allowing for rounding.");
-    print_terminal_text("The three trades share one purchase and overlapping price changes. They do not establish whether the forecast probabilities are accurate.");
     print_benchmark_comparison(track, initial_price, observed, terms, lattice, gbm,
         joinpath(output, "benchmark-comparison.csv"); issues=issues);
     # Report the separate example for Advanced Question 3 -

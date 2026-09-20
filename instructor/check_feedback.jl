@@ -1,4 +1,5 @@
 using Test # check feedback helpers without changing the student's graded checks
+include(joinpath(@__DIR__, "..", "reports", "Terminal.jl"));
 include(joinpath(@__DIR__, "..", "test", "Rubric.jl"));
 
 """
@@ -70,5 +71,10 @@ end
         @test rubric_score(results; tests_ran=true, completion=false) == expected;
         @test rubric_score(results; tests_ran=false, completion=false) == 0;
         @test rubric_score(results; tests_ran=true, completion=true) == (passed == total ? 4 : expected);
+        reviewed = 2*passed > total && passed < total ? 3 : expected;
+        @test rubric_score(results; tests_ran=true, completion=false, minor_error_review=true) == reviewed;
+        @test rubric_score(results; tests_ran=true, completion=true, minor_error_review=true) ==
+            (passed == total ? 4 : reviewed);
+        @test rubric_score(results; tests_ran=false, completion=false, minor_error_review=true) == 0;
     end
 end

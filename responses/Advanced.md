@@ -2,7 +2,9 @@
 
 Set [TRACK.txt](../TRACK.txt) to `advanced`. Complete the six functions in
 [src/Advanced.jl](../src/Advanced.jl), returning the values specified in their
-docstrings. Save your code, then run this command in a terminal in the PS2 folder:
+docstrings. Before reading the benchmark-comparison results, write the
+prediction requested in Question 2d. Save your code, then run this command
+in a terminal in the PS2 folder:
 
 ```text
 julia --project=. --startup-file=no check_submission.jl
@@ -75,7 +77,8 @@ TODO: Add the parameter table, purchase price, 63-day benchmark price, compariso
 
 ## 2. Why do the models give different probabilities?
 
-Use your results from Question 1. Write one short paragraph for each part.
+Use your results from Question 1 for parts a–c. Write one short paragraph
+for each. Part d uses the report's separate benchmark comparison.
 
 **a. Explain the difference between the models.** Why can the lattice and
 the GBM model give different probabilities of beating the benchmark even
@@ -97,8 +100,38 @@ and large changes tended to follow other large changes. Explain how the
 models' growth-rate distributions, fixed parameters, and independent daily
 changes limit their ability to reproduce these two patterns.
 
+**d. Lower the benchmark from 5% to 1%.** Keep the purchase price, 2025
+parameter estimates, and 126-day holding period fixed. Change only the
+continuously compounded benchmark rate, from 0.05 to 0.01 per trading year.
+
+1. **Predict.** Before reading the comparison results, write one or two
+   sentences predicting how the sale price needed to match the benchmark
+   and each model's probability of beating it will change. Explain your
+   reasoning. Keep this prediction even if you later revise your explanation.
+2. **Read the calculation.** Run the same checker command and find
+   **Question 2: benchmark comparison (5% to 1%)**. The supplied report calls
+   your existing functions with both rates. You do not need to edit a rate,
+   write another function, or run a different command. Copy its two rows
+   into a table with the benchmark rate (% per trading year), sale price to
+   match it (USD/share), lattice probability (%), successful lattice node
+   count, and GBM probability (%). For each model, subtract the 5% row's
+   probability from the 1% row's probability and report the change in
+   **percentage points**. For example, a change from 50% to 55% is
+   +5 percentage points.
+3. **Explain.** Compare the results with your prediction in one short
+   paragraph. Use the reported node counts to decide whether the lower
+   benchmark added any lattice sale prices to the successful set. Explain
+   how the lattice's discrete sale prices and the GBM model's continuous
+   sale-price distribution account for the two probability changes.
+   Why are the fitted parameters unchanged? Do not divide the successful
+   node count by the total: the nodes need not be equally likely.
+
+Your prediction need not be correct for full credit. We assess your initial
+reasoning and your explanation of the calculated results. If you already
+saw the comparison, say so and describe what you would have expected.
+
 <!-- answer-2:start -->
-TODO: Write the three paragraphs for parts a–c.
+TODO: Write the three paragraphs for a–c, then add the prediction, benchmark-comparison table, probability changes, and explanation for d.
 <!-- answer-2:end -->
 
 ## 3. Can expected NPV be positive with less than a 50% chance of success?

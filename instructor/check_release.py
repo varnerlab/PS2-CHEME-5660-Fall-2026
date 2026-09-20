@@ -33,6 +33,19 @@ def run_case(folder: Path, label: str, expected: str, *, solution: bool = False)
     (results / f"{label}.txt").write_text(run.stdout + run.stderr)
     assert run.returncode == 0, (label, run.stderr)
     assert expected in run.stdout, (label, run.stdout)
+    assert "world prior to its definition world" not in run.stderr, (label, run.stderr)
+    lines = run.stdout.splitlines()
+    assert all(len(line) <= 78 for line in lines), (label, "terminal line exceeds 78 columns")
+    assert all(line == line.rstrip() for line in lines), (label, "trailing terminal whitespace")
+    assert "\x1b[" not in run.stdout, (label, "unexpected terminal escape sequence")
+    for index, line in enumerate(lines[:-1]):
+        # Table rules identify headers without depending on their wording.
+        if " | " in line and "+" in lines[index+1] and set(lines[index+1]) <= {"-", "+"}:
+            columns = [position for position, character in enumerate(line) if character == "|"]
+            for row in lines[index+2:]:
+                if " | " not in row:
+                    break
+                assert [position for position, character in enumerate(row) if character == "|"] == columns, (label, row)
     output_root = folder / "solution" if solution else folder
     assert (output_root / "MANIFEST.txt").is_file(), label
     print(f"PASS {label}: {expected}", flush=True)
@@ -122,6 +135,7 @@ def check_observation_separation(folder: Path) -> None:
     original = path.read_bytes()
     report = folder / "results/advanced-results.csv"
     forecasts = list(csv.DictReader(io.StringIO(report.read_text())))
+    comparison = (folder / "results/benchmark-comparison.csv").read_bytes()
     nodes = (folder / "results/terminal-nodes.csv").read_bytes()
     rows = list(csv.DictReader(io.StringIO(original.decode())))
     try:
@@ -140,9 +154,59 @@ def check_observation_separation(folder: Path) -> None:
             assert abs(float(after["observed_scaled_npv"])-expected_npv) < 1e-12
             assert after["observed_beats_benchmark"] == "true"
         assert (folder / "results/terminal-nodes.csv").read_bytes() == nodes
+        assert (folder / "results/benchmark-comparison.csv").read_bytes() == comparison
     finally:
         path.write_bytes(original)
     print("PASS changing 2026 observations changes outcomes but leaves forecasts unchanged", flush=True)
+
+
+def check_benchmark_comparison(folder: Path, track: str, *, results_root: Path | None = None) -> None:
+    """Check both rates independently, including the added successful lattice node.
+
+    Recompute the benchmark prices, binomial tails, node counts, and Advanced
+    normal probabilities from the 2025 data using Python only. Check the 5%
+    row against the original report. These are instructor checks, not graded
+    student tests. Raise AssertionError on any disagreement.
+    """
+    with (folder / "data/AAPL-2025.csv").open() as source:
+        prices = [float(row["price"]) for row in csv.DictReader(source)]
+    ratios = [b / a for a, b in zip(prices, prices[1:])]
+    up = [r for r in ratios if r > 1]
+    down = [r for r in ratios if r < 1]
+    u, d, p = sum(up) / len(up), sum(down) / len(down), len(up) / len(ratios)
+    returns = [math.log(r) for r in ratios]
+    average = sum(returns) / len(returns)
+    mu_g = average * 252
+    sigma = math.sqrt(sum((r-average)**2 for r in returns) / (len(returns)-1) * 252)
+    report_root = results_root if results_root is not None else folder
+    with (report_root / "results/benchmark-comparison.csv").open() as source:
+        rows = list(csv.DictReader(source))
+    assert [float(row["benchmark"]) for row in rows] == [0.05, 0.01]
+    days = 126
+    time = days / 252
+    for row in rows:
+        rate = float(row["benchmark"])
+        assert int(row["trading_days"]) == days
+        threshold = prices[-1] * math.exp(rate * time)
+        successful = [k for k in range(days+1) if u**k * d**(days-k) * math.exp(-rate*time) > 1]
+        probability = sum(math.comb(days, k) * p**k * (1-p)**(days-k) for k in successful)
+        assert abs(float(row["sale_price_to_match_benchmark"]) - threshold) < 1e-10
+        assert abs(float(row["lattice_probability"]) - probability) < 1e-8
+        assert int(row["successful_nodes"]) == len(successful) == (59 if rate == 0.05 else 60)
+        assert int(row["total_nodes"]) == days+1
+        if track == "advanced":
+            gbm = 0.5 * math.erfc((rate-mu_g) * math.sqrt(time) / (sigma * math.sqrt(2)))
+            assert abs(float(row["gbm_probability"]) - gbm) < 1e-12
+        else:
+            assert "gbm_probability" not in row
+    assert float(rows[1]["lattice_probability"]) > float(rows[0]["lattice_probability"])
+    if track == "advanced":
+        assert float(rows[1]["gbm_probability"]) > float(rows[0]["gbm_probability"])
+    with (report_root / f"results/{track}-results.csv").open() as source:
+        original = next(row for row in csv.DictReader(source) if row["trading_days"] == str(days))
+    for field in ("sale_price_to_match_benchmark", "lattice_probability"):
+        assert rows[0][field] == original[field]
+    print(f"PASS {track}: independent 5%-to-1% comparison and unchanged main results", flush=True)
 
 
 def check_missing_outcomes(folder: Path, track: str, output: str) -> None:
@@ -158,9 +222,15 @@ def check_missing_outcomes(folder: Path, track: str, output: str) -> None:
         rows = list(csv.DictReader(source))
     assert [row["trading_days"] for row in rows] == ["21", "63", "126"]
     assert all(row[field] == "" for row in rows for field in fields)
-    assert output.count("observed outcome: UNAVAILABLE") == 3
-    for label in ("Observed sale on", "Observed scaled NPV =", "Sale price to match the benchmark ="):
-        assert label not in output, label
+    for days in (21, 63, 126):
+        assert f"{days}-day observed outcome" in " ".join(output.split())
+    with (folder / "results/benchmark-comparison.csv").open() as source:
+        comparison = list(csv.DictReader(source))
+    assert len(comparison) == 2
+    assert all(row["sale_price_to_match_benchmark"] == "" for row in comparison)
+    for label in ("Sale price to match benchmark", "Observed sale date", "Observed sale price", "Observed scaled NPV (%)", "Beat benchmark?"):
+        line = next(line for line in output.splitlines() if line.startswith(label + " "))
+        assert [cell.strip() for cell in line.split("|")[1:]] == ["UNAVAILABLE"] * 3, line
     print(f"PASS {track}: missing student outcomes are not supplied by the report", flush=True)
 
 
@@ -213,6 +283,21 @@ def check_student_outcome_reporting(folder: Path) -> None:
         assert float(row["sale_price_to_match_benchmark"]) == 456.0
         assert float(row["observed_scaled_npv"]) == -0.25
         assert row["observed_beats_benchmark"] == "false"
+    with (folder / "results/benchmark-comparison.csv").open() as source:
+        assert all(float(row["sale_price_to_match_benchmark"]) == 456.0 for row in csv.DictReader(source))
+
+    # The comparison must call student probability functions with the lower rate.
+    install_solution(folder, "Advanced")
+    source = path.read_text().replace(
+        "probability = 0.0;", "benchmark == 0.01 && return 0.123;\n    probability = 0.0;")
+    source = source.replace(
+        "if parameters.sigma == 0", "benchmark == 0.01 && return 0.456;\n    if parameters.sigma == 0")
+    path.write_text(source)
+    run_case(folder, "advanced-student-returned-comparison", "Public tests: 27/27 passed")
+    with (folder / "results/benchmark-comparison.csv").open() as source:
+        comparison = list(csv.DictReader(source))
+    assert float(comparison[1]["lattice_probability"]) == 0.123
+    assert float(comparison[1]["gbm_probability"]) == 0.456
     install_solution(folder, "Advanced")
     print("PASS the report uses student-returned outcomes without recomputing them", flush=True)
 
@@ -262,6 +347,7 @@ def check_source_selection(folder: Path) -> None:
             assert "local solution: true" in record
             assert all(path.read_bytes() == content for path, content in student_outputs.items())
             assert all((folder / f"src/{name}.jl").read_bytes() == content for name, content in starters.items())
+            check_benchmark_comparison(folder, selected, results_root=local_root)
         check_results(folder, results_root=local_root)
         (folder / "TRACK.txt").write_text("standard\n")
         (local_root / "src/Standard.jl").unlink()
@@ -310,13 +396,15 @@ def main() -> None:
         output = run_case(folder, "advanced-starter", "Public tests: 0/27 passed")
         assert "Answers: responses/Advanced.md" in output
         check_missing_outcomes(folder, "advanced", output)
-        assert "Expected scaled NPV =" not in output
-        assert "Mean growth rate =" not in output
+        example = output.split("Advanced Question 3: separate example with assumed parameters")[1].split("Unavailable calculations")[0]
+        assert "UNAVAILABLE: complete gbm_probability" in example
+        assert "Expected scaled NPV" not in example
         check_source_selection(folder)
         install_solution(folder, "Standard")
         output = run_case(folder, "standard-reference", "Public tests: 20/20 passed")
         assert "Docstrings: All required functions have docstrings." in output
         assert "Local rubric feedback: pending completion review" in output
+        check_benchmark_comparison(folder, "standard")
         # Numerical success must not hide an unfinished answer or missing docstring.
         source = folder / "src/Standard.jl"
         source.write_text(re.sub(r'""".*?"""\n', '', source.read_text(), count=1, flags=re.S))
@@ -332,8 +420,10 @@ def main() -> None:
         assert "Docstrings: All required functions have docstrings." in output
         assert "All three answer blocks contain text without TODO." in output
         check_results(folder)
+        check_benchmark_comparison(folder, "advanced")
         shutil.copy2(folder / "results/advanced-results.csv", ROOT / "solution/results/advanced-results.csv")
         shutil.copy2(folder / "results/terminal-nodes.csv", ROOT / "solution/results/terminal-nodes.csv")
+        shutil.copy2(folder / "results/benchmark-comparison.csv", ROOT / "solution/results/benchmark-comparison.csv")
         check_observation_separation(folder)
         check_student_outcome_reporting(folder)
         # Confirm partial credit when only the first task is unfinished -
@@ -344,9 +434,12 @@ def main() -> None:
         (folder / "src/Standard.jl").write_text(partial)
         output = run_case(folder, "standard-partial", "Public tests: 15/20 passed")
         assert "Local rubric feedback: 2" in output
+        assert "The teaching team may award 3" in output
         # A bad source file must clear old results and still write a submission record -
         (folder / "src/Standard.jl").write_text("function broken(\n")
-        run_case(folder, "invalid-source", "Public tests: 0/20 passed")
+        output = run_case(folder, "invalid-source", "Public tests: 0/20 passed")
+        assert output.count("ParseError:") == 1
+        assert "Checks could not run" in output
         assert not any((folder / "results").glob("*.csv"))
         (folder / "TRACK.txt").write_text("unknown\n")
         run_case(folder, "invalid-track", "Public tests: 0/0 passed")

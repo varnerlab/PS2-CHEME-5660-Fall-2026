@@ -79,6 +79,26 @@ loading before the selected source, and a missing local solution. They
 confirm that the default command still uses the starter when local solutions
 are present and that solution runs preserve student outputs.
 
+The benchmark comparison reuses the fitted parameters and calls the student's
+existing functions at 5% and 1% for 126 days. Its separate CSV and terminal
+table include the benchmark prices, lattice probabilities, successful node
+counts, and Advanced GBM probabilities. Independent calculations verify
+both rates and confirm that failed student functions remain unavailable.
+
+For the minor-error grading review, apply all criteria in [RUBRIC.md](../RUBRIC.md).
+Record the specific error and why the code and explanations support a 3.
+Do not infer eligibility from the number of failures alone. The checker
+continues to report the score from the test count; the teaching team can
+use `rubric_score(...; tests_ran=true, completion=false, minor_error_review=true)`
+after accepting the review. This never awards 4 when a check fails.
+
+The checker and report share [terminal formatting helpers](../reports/Terminal.jl).
+Output fits 78 columns, uses aligned plain-text tables, and groups repeated
+diagnostics. The three holding periods appear side by side. Loading errors
+are printed once with relative source paths; their full details remain in
+the submission record. Release checks verify line widths, table alignment,
+and the absence of the Julia binding warnings previously seen on failed loads.
+
 To check answer detection, docstring detection, and every grading threshold,
 run:
 
@@ -116,6 +136,7 @@ course snapshot, `af75badf5789f497e747173ca2daf783627bc911`.
 | Calculate the GBM probability | L4b GBM NPV example |
 | Calculate observed outcomes and compare them with forecasts | Implement the sale-observation selection, benchmark price, scaled NPV, and success rule |
 | Explain missing patterns in daily growth | L3a observations and L3b/L4b model assumptions |
+| Predict and explain a lower benchmark's effect | The same NPV rule, with fixed fitted parameters and a changed success threshold |
 
 The L4b parameter example also demonstrates regression. PS2 explicitly chooses
 the sample-mean estimate taught in the same lecture, so students do not have

@@ -19,13 +19,40 @@ attempted work submitted by the initial deadline still qualifies for revisions.
 |:--:|:--:|:--:|:--|
 | 0 | 0 | 0 | — |
 | 1 | 1–10 | 1–13 | — |
-| 2 | 11–19 | 14–26 | — |
-| 3 | 20 | 27 | At least one requirement below is not met |
+| 2 | 11–19 | 14–26 | Unless the minor-error review below supports a 3 |
+| 3 | 20 | 27 | At least one completion requirement below is not met |
+| 3 | 11–19 | 14–26 | The minor-error criteria below are met after teaching-team review |
 | 4 | 20 | 27 | All requirements below are met |
 
-Passing only the 20 shared checks on the Advanced track earns 2. We grade
+Completing only the 20 shared checks on the Advanced track earns 2;
+unfinished GBM functions do not qualify for the minor-error review. We grade
 the selected track. To change tracks, update [TRACK.txt](TRACK.txt), complete
 that track's files, and rerun the checker.
+
+## A 3 for a minor coding error
+
+When more than half the checks pass, the teaching team may award **3** for
+otherwise complete work with a minor, localized coding error. This requires
+all of the following:
+
+- Every required function is implemented; none remains a starter error or
+  an unfinished task.
+- The failed checks can be traced to one small implementation mistake
+  that can be corrected locally without replacing the method. One mistake
+  may cause several checks to fail.
+- The code and written answers show understanding of the required methods,
+  time units, benchmark rule, and model interpretation. All requested
+  response parts are attempted, and the documentation requirements are met.
+
+For example, an isolated `>=` in a success check that should use `>` may
+qualify when the written explanation correctly excludes equality. Missing
+functions, hard-coded test answers, or a misunderstanding of discounting
+do not qualify. A score of 4 still requires every check to pass and all
+completion requirements to be met.
+
+The checker reports the score from the test count; it cannot assess the
+cause of a failure. The teaching team applies this review when grading, so
+students do not need to request an exception or edit the checker.
 
 ## Requirements for a 4
 
@@ -44,7 +71,11 @@ that track's files, and rerun the checker.
 - **Finished work:** In your selected track's files, remove completed TODOs
   and starter errors. Answer all three questions with the requested numbers,
   units, and explanations, including the three comparisons with observed
-  2026 outcomes.
+  2026 outcomes and the 5%-to-1% benchmark comparison. For the comparison,
+  give a reasoned prediction, the reported values and probability changes,
+  and an explanation that agrees with the calculated results. An incorrect
+  initial prediction does not reduce the score when it is explained and
+  reconsidered using the results.
 
 The checker flags missing docstrings and answers; it cannot judge their
 quality. When all tests pass, it reports **pending completion review**.

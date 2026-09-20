@@ -52,6 +52,9 @@ A named tuple with these entries:
 
 - `dt`: Time per trading day, `1/252` trading year.
 - `benchmark`: Continuously compounded rate, `0.05` per trading year.
+- `comparison_benchmark`: Lower rate, `0.01` per trading year, used only in
+  the 126-day benchmark comparison in Question 2.
+- `comparison_days`: Holding period for the benchmark comparison, 126 trading days.
 - `primary_days`: Main holding period, 63 trading days.
 - `holding_days`: The three holding periods, `[21, 63, 126]` trading days.
 - `illustration`: Assumed GBM parameters for Advanced Question 3. The mean
@@ -60,8 +63,8 @@ A named tuple with these entries:
   year. These values are separate from the AAPL estimates.
 """
 function assignment_terms()::NamedTuple
-    return (dt=1/252, benchmark=0.05, primary_days=63,
-        holding_days=[21, 63, 126],
+    return (dt=1/252, benchmark=0.05, comparison_benchmark=0.01, primary_days=63,
+        comparison_days=126, holding_days=[21, 63, 126],
         illustration=(mu_g=0.035, sigma=0.30, mu=0.08));
 end
 

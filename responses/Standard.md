@@ -2,7 +2,9 @@
 
 Set [TRACK.txt](../TRACK.txt) to `standard`. Complete the four functions in
 [src/Standard.jl](../src/Standard.jl), returning the values specified in their
-docstrings. Save your code, then run this command in a terminal in the PS2 folder:
+docstrings. Before reading the benchmark-comparison results, write the
+prediction requested in Question 2c. Save your code, then run this command
+in a terminal in the PS2 folder:
 
 ```text
 julia --project=. --startup-file=no check_submission.jl
@@ -50,7 +52,7 @@ count as success, and how does your code handle that case?
 TODO: Add the table and the explanation for parts a–b.
 <!-- answer-1:end -->
 
-## 2. Did the trade beat the benchmark in 2026?
+## 2. What happened, and what changes with a lower benchmark?
 
 Use the financial report's observed outcomes and lattice forecasts for
 21, 63, and 126 trading days. The checker calls your `observed_outcome`
@@ -77,15 +79,37 @@ beating it, and a value of exactly 50% favors neither outcome. Explain why
 three outcomes from this one price history are not enough to establish
 whether the forecast probabilities are accurate.
 
-**c. Explain the effect of the holding period.** In a second short paragraph,
-identify which of the three holding periods has the highest forecast
-probability of beating the benchmark. Explain how the holding period changes
-both the possible sale prices and the price needed to match the benchmark.
-Do these three results justify a claim that waiting longer always increases
-the probability of beating the benchmark?
+**c. Lower the benchmark from 5% to 1%.** Keep the purchase price, 2025
+parameter estimates, and 126-day holding period fixed. Change only the
+continuously compounded benchmark rate, from 0.05 to 0.01 per trading year.
+
+1. **Predict.** Before reading the comparison results, write one or two
+   sentences predicting how the sale price needed to match the benchmark
+   and the probability of beating it will change. Explain your reasoning.
+   Keep this prediction even if you later revise your explanation.
+2. **Read the calculation.** Run the same checker command and find
+   **Question 2: benchmark comparison (5% to 1%)**. The supplied report calls
+   your existing functions with both rates. You do not need to edit a rate,
+   write another function, or run a different command. Copy its two rows
+   into a table with the benchmark rate (% per trading year), sale price to
+   match it (USD/share), lattice probability (%), and successful lattice
+   node count. Subtract the 5% row's probability from the 1% row's probability
+   and report the change in **percentage points**. For example, a change
+   from 50% to 55% is +5 percentage points.
+3. **Explain.** Compare the results with your prediction in one short
+   paragraph. The lattice allows only a fixed set of sale-day prices.
+   Use the reported node counts to decide whether lowering the benchmark
+   added any sale prices to the successful set. Explain how that affects
+   the probability sum and why the benchmark change does not change the
+   fitted price factors or node probabilities. Do not divide the successful
+   node count by the total: the nodes need not be equally likely.
+
+Your prediction need not be correct for full credit. We assess your initial
+reasoning and your explanation of the calculated results. If you already
+saw the comparison, say so and describe what you would have expected.
 
 <!-- answer-2:start -->
-TODO: Add the comparison table and the two paragraphs for parts a–c.
+TODO: Add the observed-trade table and interpretation for a–b, then the prediction, benchmark-comparison table, probability change, and explanation for c.
 <!-- answer-2:end -->
 
 ## 3. What does the lattice leave out?

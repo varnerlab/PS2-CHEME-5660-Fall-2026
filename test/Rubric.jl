@@ -55,35 +55,53 @@ end
 
 
 """
-    print_public_test_report(results, title) -> Nothing
+    print_public_test_report(results, title; tests_ran=true) -> Nothing
 
-Print each check's name, pass/fail result, and any error message, followed
-by the number of passed checks.
+Print aligned pass/fail labels and a summary. Number repeated errors and
+print each distinct diagnostic once after the checks.
 
 ### Arguments
 
 - `results`: Check records with `name`, `passed`, and `detail` fields.
 - `title`: Heading to print above the checks.
+- `tests_ran`: If false, explain that loading prevented the checks from running.
+  The caller displays the loading error once instead of repeating it per check.
 
 ### Returns
 
 `nothing`. The report is printed to the terminal.
 """
 function print_public_test_report(results::AbstractVector{<:NamedTuple},
-    title::String)::Nothing
+    title::String; tests_ran::Bool=true)::Nothing
 
-    println("\n", title);
-    println(repeat("=", length(title)));
+    print_terminal_section(title; major=true);
+    if !tests_ran
+        print_terminal_text("Checks could not run because a setup or source file did not load. Fix the error below and run the checker again.");
+        print_terminal_text("Public tests: 0/$(length(results)) passed. Checks that cannot run count as failed.");
+        return nothing;
+    end
+    details = unique([result.detail for result in results if !result.passed && !isempty(result.detail)]);
+    if !isempty(details)
+        println("Numbers in brackets refer to the error messages in Check details.");
+        println();
+    end
     for result ∈ results
         status = result.passed ? "PASS" : "FAIL";
-        println("[", status, "] ", result.name);
-        if !result.passed && !isempty(result.detail)
-            println("       ", result.detail);
-        end
+        index = findfirst(==(result.detail), details);
+        reference = !result.passed && index !== nothing ? " [$(index)]" : "";
+        print_terminal_text(result.name * reference; prefix="[$(status)] ", continuation="       ");
     end
 
     passed = count(result -> result.passed, results);
-    println("\npassed $(passed) of $(length(results)) public tests");
+    println("\nPublic tests: $(passed)/$(length(results)) passed");
+    if !isempty(details)
+        print_terminal_section("Check details");
+        for (index, detail) in enumerate(details)
+            println("Error $(index)");
+            print_terminal_detail(detail);
+            index < length(details) && println();
+        end
+    end
     return nothing;
 end
 
@@ -196,7 +214,7 @@ end
 
 
 """
-    rubric_score(results; tests_ran, completion) -> Int
+    rubric_score(results; tests_ran, completion, minor_error_review=false) -> Int
 
 Calculate the rubric score from the check results and completion review.
 
@@ -206,12 +224,14 @@ Calculate the rubric score from the check results and completion review.
 - `tests_ran`: Whether the student's source file loaded; `false` gives 0.
 - `completion`: Set to `true` only when the teaching team has reviewed the
   code, documentation, and answers and found that all requirements are met.
+- `minor_error_review`: Set to `true` only after teaching-team review confirms
+  the minor-error criteria in RUBRIC.md. The student checker leaves it false.
 
 ### Returns
 
 An integer from 0 to 4. A submission with no passing checks receives 0.
 Passing at least one check but no more than half gives 1; passing more than
-half but fewer than all gives 2.
+half but fewer than all gives 2, or 3 with an accepted minor-error review.
 When all checks pass, return 3 if `completion` is `false` and 4 if it is `true`.
 
 ### Notes
@@ -220,7 +240,7 @@ The local checker prints pending review when all checks pass. It leaves the
 choice between 3 and 4 to the teaching team.
 """
 function rubric_score(results::AbstractVector{<:NamedTuple};
-    tests_ran::Bool, completion::Bool)::Int
+    tests_ran::Bool, completion::Bool, minor_error_review::Bool=false)::Int
 
     passed = count(result -> result.passed, results);
     total = length(results);
@@ -230,7 +250,7 @@ function rubric_score(results::AbstractVector{<:NamedTuple};
     elseif 2*passed <= total
         return 1;
     elseif passed < total
-        return 2;
+        return minor_error_review ? 3 : 2;
     elseif !completion
         return 3;
     else

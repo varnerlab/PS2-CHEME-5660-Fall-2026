@@ -7,7 +7,7 @@ const _CHECK_ROOT = @__DIR__;
 """
     clear_previous_results(root::String) -> Nothing
 
-Remove the three CSV files written by the PS2 report. Clear them before
+Remove the four CSV files written by the PS2 report. Clear them before
 running checks or reporting results, even when loading the source failed.
 
 ### Arguments
@@ -24,7 +24,7 @@ Raises an error if an existing file cannot be removed. The checker reports
 this as a setup error.
 """
 function clear_previous_results(root::String)::Nothing
-    for name in ("standard-results.csv", "advanced-results.csv", "terminal-nodes.csv")
+    for name in ("standard-results.csv", "advanced-results.csv", "terminal-nodes.csv", "benchmark-comparison.csv")
         path = joinpath(root, "results", name);
         isfile(path) && rm(path);
     end
@@ -32,13 +32,16 @@ function clear_previous_results(root::String)::Nothing
 end
 
 # Include.jl owns all assignment file loading and source-path selection -
+const _CHECK_LOAD_ERROR = try
+    include(joinpath(_CHECK_ROOT, "Include.jl"));
+    "";
+catch caught
+    sprint(showerror, caught);
+end;
+
+# Read bindings in a fresh top-level expression after Include.jl has loaded -
 const _CHECK_SETUP = let
-    detail = "";
-    try
-        include(joinpath(_CHECK_ROOT, "Include.jl"));
-    catch caught
-        detail = sprint(showerror, caught);
-    end
+    detail = _CHECK_LOAD_ERROR;
     # Retain the selected track and checks when a later include fails -
     track = isdefined(Main, :_TRACK) && _TRACK in ("standard", "advanced") ? _TRACK : "unavailable";
     checks = isdefined(Main, :_PUBLIC_CHECKS) ? _PUBLIC_CHECKS : NamedTuple[];
@@ -135,8 +138,11 @@ function main()::Nothing
     end
     results = tests_ran ? evaluate_public_checks(_CHECK_SETUP.checks) :
         failed_public_checks(_CHECK_SETUP.checks, _CHECK_SETUP.detail);
-    print_public_test_report(results, "PS2 $(titlecase(track)) checks");
-    tests_ran || println("Setup or source error: ", _CHECK_SETUP.detail);
+    print_public_test_report(results, "PS2 $(titlecase(track)) checks"; tests_ran=tests_ran);
+    if !tests_ran
+        print_terminal_section("Setup or source error");
+        print_terminal_detail(replace(_CHECK_SETUP.detail, _CHECK_ROOT * "/" => ""));
+    end
     passed = count(result -> result.passed, results);
     all_passed = tests_ran && !isempty(results) && passed == length(results);
     names = track == "standard" ? STANDARD_DOCUMENTED_FUNCTIONS : ADVANCED_DOCUMENTED_FUNCTIONS;
@@ -155,7 +161,8 @@ function main()::Nothing
             print_finance_report(track, _CHECK_ROOT;
                 output_directory=joinpath(_CHECK_SETUP.output_root, "results"));
         catch caught
-            println("Financial report error: ", sprint(showerror, caught));
+            print_terminal_section("Financial report error");
+            print_terminal_detail(sprint(showerror, caught));
         end
     end
     # Write the submission record -
@@ -176,15 +183,15 @@ function main()::Nothing
         write_file_record(io, _CHECK_ROOT, track, _CHECK_SETUP.source_path);
     end
     # Show what to finish before submitting -
-    println(_CHECK_SETUP.solution ? "\nLocal solution check" : "\nSubmission check");
+    print_terminal_section(_CHECK_SETUP.solution ? "Local solution check" : "Submission check"; major=true);
     println("Track: ", track);
     println("Public tests: $(passed)/$(length(results)) passed");
     if !tests_ran
-        println("Docstrings were not checked. Fix the setup or source error above, then run the checker again.");
+        print_terminal_text("Docstrings were not checked. Fix the setup or source error above, then run the checker again.");
     elseif documented
         println("Docstrings: All required functions have docstrings.");
     else
-        println("Docstrings: Restore the supplied documentation for ", join(string.(missing_docs), ", "), ".");
+        print_terminal_text("Docstrings: Restore the supplied documentation for " * join(string.(missing_docs), ", ") * ".");
     end
     if _CHECK_SETUP.solution
         println("Wrote ", relpath(record_path, _CHECK_ROOT), ".");
@@ -194,23 +201,32 @@ function main()::Nothing
     if track in ("standard", "advanced")
         println("Answers: ", response_path);
         if answers
-            println("All three answer blocks contain text without TODO. The teaching team will review the answers.");
+            print_terminal_text("All three answer blocks contain text without TODO. The teaching team will review the answers.");
         else
             for issue in answer_issues
-                println("  ", issue);
+                print_terminal_text(issue; prefix="  - ", continuation="    ");
             end
             println("Save your answers and run the checker again.");
         end
     else
-        println("Answers were not checked. Fix the setup error above and run the checker again.");
+        print_terminal_text("Answers were not checked. Fix the setup error above and run the checker again.");
     end
+    println();
     println("Local rubric feedback: ", feedback);
+    if tests_ran && !all_passed && 2*passed > length(results)
+        print_terminal_text("This is automated feedback. The teaching team may award 3 for otherwise complete work with a minor, localized coding error; see RUBRIC.md.");
+    end
     all_passed && println("The teaching team must still review your code, documentation, and answers.");
     println("Wrote MANIFEST.txt. This script has not uploaded your work.");
-    println("\nSave your files, create a ZIP of the whole PS2 folder, and upload it to the PS2 assignment on Canvas.");
-    println("Name the ZIP CHEME-5660-PS2-<your netid>.zip, using your own NetID.");
-    println("Submit attempted work by the initial deadline even if checks fail or cannot run.");
-    println("For eligible revisions, use New Attempt on the same Canvas assignment.");
+    print_terminal_section("Next steps");
+    print_terminal_text("Save your code and answers, then rerun the checker."; prefix="1. ", continuation="   ");
+    print_terminal_text("Create a ZIP of the entire PS2 folder, using this filename:"; prefix="2. ", continuation="   ");
+    println("   CHEME-5660-PS2-<your netid>.zip");
+    println("   Replace <your netid> with your own NetID.");
+    print_terminal_text("Upload the ZIP to the PS2 assignment on Canvas."; prefix="3. ", continuation="   ");
+    println();
+    print_terminal_text("Submit attempted work by the initial deadline even if checks fail or cannot run.");
+    print_terminal_text("For eligible revisions, use New Attempt on the same Canvas assignment.");
     return nothing;
 end
 

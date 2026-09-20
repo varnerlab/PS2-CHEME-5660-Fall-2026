@@ -30,6 +30,8 @@ You can also paste this file's contents into the Canvas HTML editor.
   probability of beating the benchmark.
   In both tracks, write the code that selects the observed sale prices and
   calculates the benchmark prices, scaled NPVs, and whether the trades succeeded.
+  Then predict and explain what changes when the 126-day benchmark falls from
+  5% to 1%. The supplied report runs that comparison using your existing functions.
 </p>
 
 <h3>Download and instructions</h3>
@@ -87,7 +89,11 @@ You can also paste this file's contents into the Canvas HTML editor.
 
 <pre style="display: block; padding: 10px; margin: 0 0 10px; color: #333333; background-color: #f5f5f5; border: 1px solid #cccccc; border-radius: 4px; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap;"><code style="color: #333333; background-color: #f5f5f5; padding: 0; font-family: inherit; font-size: inherit;">julia --project=. --startup-file=no -e 'using Pkg; Pkg.instantiate()'</code></pre>
 
-<p>After saving your code, run this command to check it and generate the financial report:</p>
+<p>
+  Before reading the benchmark-comparison results, write the prediction in
+  Question 2 of your response file (Standard part c; Advanced part d).
+  After saving your code, run this command to check it and generate the financial report:
+</p>
 
 <pre style="display: block; padding: 10px; margin: 0 0 10px; color: #333333; background-color: #f5f5f5; border: 1px solid #cccccc; border-radius: 4px; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap;"><code style="color: #333333; background-color: #f5f5f5; padding: 0; font-family: inherit; font-size: inherit;">julia --project=. --startup-file=no check_submission.jl</code></pre>
 
@@ -100,6 +106,8 @@ You can also paste this file's contents into the Canvas HTML editor.
   includes the observed outcomes calculated by your code. Unfinished
   calculations show <code style="color: #c7254e; background-color: #f5f5f5; padding: 2px 4px; border-radius: 3px; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 90%;">UNAVAILABLE</code>;
   save your code and rerun the command as you complete the functions.
+  The section <strong>Question 2: benchmark comparison (5% to 1%)</strong>
+  supplies the two-row comparison; no additional code or command is needed.
 </p>
 
 <p>
@@ -109,6 +117,9 @@ You can also paste this file's contents into the Canvas HTML editor.
   It does <strong>not</strong> upload anything to Canvas.
   After you pass every test, the teaching team must review your code,
   documentation, and answers before awarding a score of 4.
+  The team may award 3 for otherwise complete work with a minor, localized
+  coding error under the rubric's review criteria. This review is part of
+  normal grading; students do not need to request an exception.
 </p>
 
 <h3>Submit to Canvas</h3>

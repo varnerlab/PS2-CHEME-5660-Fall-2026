@@ -9,7 +9,7 @@ RELEASE_FILES = [
     "TRACK.txt", "Include.jl", "check_submission.jl",
     "src/Standard.jl", "src/Advanced.jl", "src/Support.jl",
     "responses/Standard.md", "responses/Advanced.md",
-    "data/README.md", "data/AAPL-2025.csv", "data/AAPL-2026.csv", "reports/Finance.jl",
+    "data/README.md", "data/AAPL-2025.csv", "data/AAPL-2026.csv", "reports/Finance.jl", "reports/Terminal.jl",
     "test/Rubric.jl", "test/public_standard_tests.jl", "test/public_advanced_tests.jl",
 ]
 

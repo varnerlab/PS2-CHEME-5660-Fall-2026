@@ -5,6 +5,7 @@ const _ROOT = @__DIR__; # assignment folder, independent of the working director
 const _PATH_TO_DATA = joinpath(_ROOT, "data"); # supplied price data
 
 # Load feedback tools first so the checker can explain later loading errors -
+include(joinpath(_ROOT, "reports", "Terminal.jl"));
 include(joinpath(_ROOT, "test", "Rubric.jl"));
 
 # Select the source directory here -
@@ -24,7 +25,7 @@ using VLQuantitativeFinancePackage: build, populate, log_growth_matrix,
 using Distributions: Normal, ccdf # normal distribution and probability above a cutoff
 using Statistics: mean, std # sample mean and sample standard deviation
 using Dates: Date, Day # read dates and check their order in each price file
-using Printf: @printf # print prices and probabilities with fixed decimal places
+using Printf: @printf, @sprintf # print and format prices and probabilities with fixed decimal places
 
 # Load the supplied data reader and calculation helpers -
 include(joinpath(_ROOT, "src", "Support.jl")); # price data, fixed inputs, and expected GBM NPV

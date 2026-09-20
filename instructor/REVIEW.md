@@ -280,3 +280,87 @@ and answer markers are preserved. Executable code, prices, track selection,
 and local solutions are unchanged. The local student ZIP was refreshed;
 no release was published. This is a document and implementation review,
 not a usability trial with students seeing the assignment for the first time.
+
+## Benchmark comparison and minor-error grading — September 19, 2026
+
+Both tracks now include a predict–calculate–explain comparison at benchmark
+rates of 5% and 1%, keeping the 63-day holding period and 2025 estimates fixed.
+The report calls the existing student functions at both rates and prints an
+aligned table with benchmark prices, probabilities, and successful lattice
+node counts. It also writes `benchmark-comparison.csv`. Students use the
+same checker command and implement no additional functions. The response
+instructions explain percentage-point changes, preserve the initial prediction,
+and allow full credit for a mistaken prediction followed by a correct
+interpretation. Standard Question 2c replaces the former holding-period
+paragraph; Advanced adds the comparison as Question 2d.
+
+Independent calculations confirm that the lattice remains at 61.7141%, with
+30 of 64 nodes successful at both rates, while GBM rises from 54.4998% to
+57.4869%. The existing 5% results and Advanced Question 3 are preserved.
+The local answer guide and Canvas description match the revised questions.
+
+The rubric now allows a teaching-team score of 3 for otherwise complete
+work with one minor, localized coding error when more than half the checks
+pass and the written work shows understanding. Missing functions and incorrect
+methods do not qualify. The checker retains automatic test-count feedback
+and explains the review; accepting a review never awards 4 with failed checks.
+
+The full release checks pass, including independent calculations, unfinished
+student functions, report use of student-returned comparison values, separate
+local-solution output, and cleanup after a source error. Both reference
+solutions pass their unchanged 20 and 27 public checks. All 313 feedback
+and grading assertions pass. After the final table-formatting change, the
+Advanced starter and both reference reports were rerun from the rebuilt ZIP.
+The Markdown documents render to HTML with their tables, question headings,
+and hidden answer markers intact, and local links resolve. The rebuilt
+student ZIP excludes solutions and instructor material. No release was published.
+
+## Benchmark comparison moved to 126 days — September 19, 2026
+
+The final benchmark exercise uses 126 trading days, replacing the 63-day
+comparison described in the preceding entry. Lowering the rate from 5% to
+1% now increases both model probabilities: the lattice moves from 62.9059%
+to 69.4252%, and GBM moves from 56.3502% to 60.5259%. The lattice includes
+one more successful node, with sale price 276.0641 USD/share and probability
+about 6.5192%. The successful-node count rises from 59 to 60 out of 127.
+
+A separate `comparison_days=126` setting controls this exercise. The report,
+both response files, README, Canvas copy, instructor instructions, and local
+answer guide use the revised horizon. The answer guide accepts the small
+rounding difference between subtracting displayed and unrounded probabilities.
+The main three-horizon results, 63-day node export, Advanced Question 3,
+student function requirements, and minor-error grading policy are preserved.
+
+Both reference solutions pass all 20 and 27 public checks. The full release
+checks pass, including independent calculations at both benchmark rates and
+the original horizons, incomplete-code feedback, and student-returned report
+values. The rendered Markdown keeps the three question blocks and local
+links intact. The rebuilt student ZIP matches all release files.
+
+## Student terminal formatting — September 19, 2026
+
+Added shared plain-text formatting in `reports/Terminal.jl` for headings,
+78-column wrapping, aligned tables, and diagnostic blocks. The financial
+report displays model estimates with units, places the three holding periods
+side by side, and uses separate tables for the benchmark comparison and
+Advanced Question 3. Numeric columns are right aligned. Missing results
+occupy the same table cells as completed results and display `UNAVAILABLE`.
+CSV values and numerical calculations are unchanged.
+
+Failed checks refer to numbered diagnostics instead of repeating identical
+errors. Unavailable report calculations are grouped by cause. A source-load
+failure prints its error once with relative paths and preserves Julia's
+source snippet and error pointer. The setup include now finishes before a
+separate top-level expression reads its bindings, removing the Julia 1.12
+binding warnings previously emitted by failed loads. Submission instructions
+use numbered steps and put the ZIP filename on its own line.
+
+The full release suite passes, including both reference solutions at 20/20
+and 27/27 public checks, independent numerical calculations, partial work,
+missing answers, source errors, and an invalid track. All 313 feedback and
+grading assertions pass. Width and column alignment were also checked on
+29 tables across 11 submission states. After the final diagnostic wrapping
+adjustment, invalid-track, missing-solution, and syntax-error runs pass with
+complete words and source pointers preserved. The README documents the new
+layout; its local links and the instructor README render correctly. The
+rebuilt student ZIP includes the shared formatter and matches the saved files.

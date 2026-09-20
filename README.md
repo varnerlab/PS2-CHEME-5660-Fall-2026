@@ -21,6 +21,8 @@ Choose one track:
 __Parameters__: Estimate your model parameters from **2025 prices**, then
 compare the forecasts with **what happened in 2026**. Calculate the observed
 trade outcomes in your own code using the supplied 2026 prices.
+Both tracks also compare the 126-day forecast at benchmark rates of 5% and
+1%. The supplied report runs this comparison using your existing functions.
 
 __Lectures__: This problem set covers weeks 3 and 4 of CHEME 4/5660. It uses
 the same Julia version, course package, and submission process as PS1.
@@ -75,7 +77,9 @@ market data.
    you could create `src/MyHelperFunctions.jl`. Load your helper files from
    [Include.jl](Include.jl), using the commented example with your own filenames.
    Put all helper `include(...)` calls there.
-6. Save your code, then run the [check_submission.jl](check_submission.jl)
+6. Before reading the benchmark-comparison results, write the short prediction
+   requested in Question 2 of your selected response file (Standard part c;
+   Advanced part d). Then save your code and run the [check_submission.jl](check_submission.jl)
    script from the root PS2 folder:
 
    ```text
@@ -90,9 +94,21 @@ market data.
    look for **PS2 financial results** in the terminal. You do not need to call
    a report function or run a separate report script.
 
+   The report places the three holding periods side by side in a table.
+   Units appear in the labels or beside each table. If checks fail, numbers
+   in brackets point to the grouped messages under **Check details**.
+   Missing financial results appear as `UNAVAILABLE`; their causes are
+   listed under **Unavailable calculations**.
+
    For both tracks, the checker runs the calculations for 21, 63, and 126
    trading days and checks that the lattice's sale-day probabilities sum
    to one, allowing small rounding differences.
+
+   It also prints **Question 2: benchmark comparison (5% to 1%)**. This
+   table uses the same fitted parameters and 126-day holding period with
+   two benchmark rates. Follow the prediction, calculation, and explanation
+   steps in your response file. The report supplies the function calls;
+   no additional Julia code or command is needed.
 
    Run the checker as you work; you do not need to finish all functions or
    answers first. Unfinished calculations are shown as `UNAVAILABLE`. Fix
@@ -218,13 +234,14 @@ checked. It __does not__ upload your work.
 Starter functions fail the tests until you complete them; unfinished
 calculations show `UNAVAILABLE`.
 
-The checker saves one results file for your selected track. It also saves
-the 63-day lattice nodes when that calculation is available:
+The checker saves one main results file for your selected track and a
+benchmark comparison. It also saves the 63-day lattice nodes when available:
 
 | File | Contents |
 |:--|:--|
 | `results/standard-results.csv` | Your lattice forecasts and observed-outcome calculations |
 | `results/advanced-results.csv` | Your forecasts and observed-outcome calculations, plus expected scaled NPV |
+| `results/benchmark-comparison.csv` | The 126-day comparison at 5% and 1%, including successful lattice node counts |
 | `results/terminal-nodes.csv` | Each 63-day lattice sale price, probability, and scaled NPV |
 
 Each run replaces the generated results. In the CSV files, an unavailable
@@ -232,6 +249,8 @@ calculation leaves an empty field. The report displays the observed outcomes
 returned by your code; it does not calculate them for you. Probabilities and
 scaled NPVs are decimal fractions in the CSV files: 0.05 means 5%. The
 terminal prints percentages.
+The main results files, exported lattice nodes, and Advanced Question 3 use
+the original 5% benchmark. Only the benchmark-comparison table uses both rates.
 
 Before uploading:
 
@@ -250,3 +269,5 @@ Submit attempted work by the initial deadline even if checks fail. For an
 eligible revision, use **New Attempt** on the same Canvas assignment.
 After you pass every test, the teaching team must review your code,
 documentation, and answers before awarding a score of 4.
+The team may award 3 for otherwise complete work with a minor, localized
+coding error, as described in the [rubric](RUBRIC.md).

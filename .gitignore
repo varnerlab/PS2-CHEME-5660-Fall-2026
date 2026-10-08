@@ -2,6 +2,10 @@
 /results/
 /MANIFEST.txt
 /dist/
-/solution/
+# Track only the files the solution release workflow needs -
+/solution/*
+!/solution/README.md
+!/solution/src/
+!/solution/responses/
 *.jl.cov
 __pycache__/

@@ -21,14 +21,40 @@ for the Canvas page. The HTML includes the gray command boxes and text highlight
 - [Standard reference code](../solution/src/Standard.jl)
 - [Advanced reference code](../solution/src/Advanced.jl)
 - [Expected results and answer guide](../solution/RESPONSE-GUIDE.md)
+- [Student-facing solution guide](../solution/README.md)
+- Worked answers: [Standard](../solution/responses/Standard.md) and
+  [Advanced](../solution/responses/Advanced.md)
 - [Saved test results](../solution/results)
 - [Build and review record](REVIEW.md)
 
-The completed Julia code, answer guide, and saved test results are local files
-under [solution](../solution). The [ignore rule](../.gitignore) keeps this
-folder out of Git. These links resolve only when the local files are present.
-A fresh clone needs local copies of both Julia solutions under
-[solution/src](../solution/src) before the reference checks can run.
+The completed Julia code, worked answers, and student-facing solution guide
+were committed after the initial deadline so the release workflow can build
+them. The [ignore rule](../.gitignore) keeps the answer guide and saved test
+results local; those two links resolve only when the local files are present.
+
+## Build the solution release
+
+Pushing a change to `solution/`, the build script, the
+[release notes](solution-release-notes.md), or the
+[workflow](../.github/workflows/solution-release.yml) to `main` runs the
+solution release workflow. It builds and tests the ZIP and creates a draft
+release, `ps2-cheme-5660-2026.1-solution`, on the student release commit.
+Review the draft on GitHub and publish it. To rebuild, delete the draft first.
+To build and test the ZIP locally, run this command from the PS2 folder:
+
+```text
+python3 instructor/build_solution_release.py
+```
+
+The script starts from the published student tag, `ps2-cheme-5660-2026.1`.
+It puts the completed code in `src`, the worked answers in `responses`, and
+the solution guide in `README.md`. The original assignment README becomes
+`ASSIGNMENT.md`. It runs both tracks through the normal checker, saves the
+reference CSV files, and confirms that the questions, docstrings, and all
+supplied files match the student tag. It then rechecks both tracks from a
+fresh extraction of the ZIP. The ZIP, its SHA256, and both checker reports are
+written to `dist/solution-release`. The script itself does not create a tag
+or a GitHub release.
 
 ## Run a local solution
 

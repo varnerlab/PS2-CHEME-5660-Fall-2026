@@ -66,6 +66,6 @@ jobs:
             --title "PS2 Reference Solution — Standard and Advanced (2026.1)" \
             --notes-file instructor/solution-release-notes.md \
             --draft
-          release_url=$(gh release list --limit 100 --json tagName,url --jq ".[] | select(.tagName == \"$RELEASE_TAG\") | .url")
+          release_url=$(gh release view "$RELEASE_TAG" --json url --jq .url)
           printf 'Solution ZIP tested successfully. SHA256: `%s`\n\n[Review and publish the draft release](%s).\n' \
             "$(cut -d' ' -f1 "$ARCHIVE.sha256")" "$release_url" >> "$GITHUB_STEP_SUMMARY"
